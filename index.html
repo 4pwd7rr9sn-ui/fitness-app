@@ -833,6 +833,51 @@ function getPlanDay(){
 }
 
 // ===========================
+// WEIGHT ESTIMATION
+// ===========================
+function estimateWeight(name){
+  const bw = parseFloat(state.profile.weight)||0;
+  const bench = parseFloat(state.profile.bench)||0;
+  const squat = parseFloat(state.profile.squat)||0;
+  const deadlift = parseFloat(state.profile.deadlift)||0;
+
+  const map = {
+    '杠铃卧推':[bench,1.0],'哑铃上斜卧推':[bench,0.7],'双杠臂屈伸':[bench,0.9],
+    '哑铃飞鸟':[bench,0.35],'绳索夹胸':[bench,0.25],'上斜哑铃飞鸟':[bench,0.3],
+    '器械推胸':[bench,0.75],'俯卧撑':[bw,0.65],
+    '哑铃推举':[bench,0.55],'坐姿推肩':[bench,0.5],'器械推肩':[bench,0.6],
+    'Y字侧平举':[bench,0.15],'哑铃前平举':[bench,0.18],'俯身飞鸟':[bench,0.15],
+    '阿诺德推举':[bench,0.45],'杠铃提拉':[bench,0.4],
+    '杠铃划船':[bench,0.8],'单手钢线下拉':[bench,0.45],'对握下拉':[bench,0.55],
+    '器械划船':[bench,0.5],'高位下拉':[bench,0.55],'哑铃单臂划船':[bench,0.4],
+    '引体向上':[bw,1.0],'硬拉':[deadlift,1.0],'对握下拉（宽距）':[bench,0.45],
+    '颈前深蹲':[squat,0.8],'高脚杯深蹲':[squat,0.45],'保加利亚分腿蹲':[squat,0.4],
+    '罗马尼亚硬拉':[deadlift,0.7],'单腿硬拉':[deadlift,0.35],
+    '腿弯举':[squat,0.3],'腿伸展':[squat,0.35],'臀推':[squat,0.7],
+    '杠铃弯举':[bench,0.3],'锤式弯举':[bench,0.25],'集中弯举':[bench,0.2],
+    '仰卧臂屈伸':[bench,0.35],'绳索下压':[bench,0.25],'过头臂屈伸':[bench,0.3],
+    '窄距卧推':[bench,0.7],'牧师凳弯举':[bench,0.25],
+    '相扑硬拉':[deadlift,0.85],'哈克深蹲':[squat,0.55],
+    '绳索后踢腿':[squat,0.15],'芭蕾分腿蹲':[squat,0.35],'单腿臀桥':[bw,0.5],
+    '绳索面拉':[bench,0.15],'农夫行走':[bw,0.5],
+    '平板支撑':[0,0],'悬垂举腿':[0,0],'死虫式':[0,0],'卷腹':[0,0],
+    '俄罗斯转体':[0,0],'侧平板':[0,0],'仰卧抬腿':[0,0],
+    '坐姿髋外展':[0,0],'弹力带螃蟹走':[0,0],
+  };
+  const m = map[name];
+  if(!m||m[0]<=0) return {weight:'',reps:''};
+  const w = Math.round(m[0]*m[1]/2.5)*2.5;
+  if(w<=0) return {weight:'',reps:''};
+  let reps=10;
+  const ex=getExercise(name);
+  if(ex&&ex.sets){
+    const rm=ex.sets.match(/(\d+)次/)||ex.sets.match(/×\s*(\d+)/);
+    if(rm) reps=parseInt(rm[1])||10;
+  }
+  return {weight:w,reps};
+}
+
+// ===========================
 // RENDER: Tab 0 — 今日训练
 // ===========================
 function renderWorkout(){
@@ -882,14 +927,15 @@ function renderPreWorkout(container, plan, planDay, dayIndex){
         肩部环绕 30s · 髋部环绕 30s · 自重深蹲 ×10 · 猫牛式 ×8 · 弹力带肩部激活
       </div>
       <div class="card">
-        <div class="card-header">今日动作预览</div>
+        <div class="card-header">今日动作预览 ${estimateWeight(planDay.exercises[0]).weight>0?'· 已根据你的力量数据推荐重量':''}</div>
         ${planDay.exercises.map((name,i)=>{
           const ex = getExercise(name);
           if(!ex) return '';
+          const est = estimateWeight(name);
           return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)">
             <span style="color:var(--text2);font-size:13px;width:20px">${i+1}</span>
             <span style="font-size:14px;font-weight:500">${name}</span>
-            <span style="margin-left:auto;font-size:11px;color:var(--text2)">${ex.sets}</span>
+            <span style="margin-left:auto;font-size:11px;color:var(--text2);text-align:right">${ex.sets}${est.weight>0?`<br><span style="color:var(--pink)">建议 ${est.weight}kg × ${est.reps}次</span>`:''}</span>
           </div>`;
         }).join('')}
       </div>
@@ -943,6 +989,19 @@ function renderActiveWorkout(container, planDay){
           </div>
         </div>`;
       }).join('')}
+      ${todayWorkout.firstSetFeedback==='pending'?`
+      <div class="card" id="first-set-fb" style="background:linear-gradient(135deg,rgba(255,107,138,0.06),rgba(255,159,10,0.06));border-left:3px solid var(--pink);animation:fadeInUp 0.4s var(--spring)">
+        <div style="font-size:14px;font-weight:600;margin-bottom:10px">🤔 第一组感觉怎么样？</div>
+        <div style="display:flex;gap:6px">
+          <button class="adjust-chip" onclick="adjustAllWeights('lighter')" style="flex:1;padding:8px;font-size:13px">🔽 太重了</button>
+          <button class="adjust-chip" onclick="adjustAllWeights('perfect')" style="flex:1;padding:8px;font-size:13px">✅ 刚好</button>
+          <button class="adjust-chip" onclick="adjustAllWeights('heavier')" style="flex:1;padding:8px;font-size:13px">🔼 太轻了</button>
+        </div>
+      </div>`:''}
+      ${todayWorkout.firstSetFeedback==='done'?`
+      <div class="card" style="background:rgba(52,199,89,0.05);border-left:3px solid var(--green);font-size:13px;color:var(--green)">
+        ✅ 重量已确认，继续加油！
+      </div>`:''}
       <button class="btn ${allDone?'btn-primary':'btn-secondary'}" onclick="finishWorkout()" style="margin-top:8px">
         ${allDone?'完成训练 🎉':'跳过剩余 → 拉伸'}
       </button>
@@ -1016,8 +1075,10 @@ function startWorkout(dayIndex, feeling){
   const lv = getLevel()||'beginner';
   const plan = PLANS[gender][lv];
   const planDay = plan.split[dayIndex];
+  const suggestion = estimateWeight(planDay.exercises[0]);
+  const hasEstimate = suggestion.weight!=='' && suggestion.weight>0;
 
-  const exercises = planDay.exercises.map(name=>{
+  const exercises = planDay.exercises.map((name,ei)=>{
     const exData = getExercise(name);
     let numSets = 4;
     if(exData && exData.sets){
@@ -1025,14 +1086,21 @@ function startWorkout(dayIndex, feeling){
       if(m) numSets = parseInt(m[1]);
     }
     if(feeling==='tired') numSets = Math.max(2, numSets - 1);
+    const est = estimateWeight(name);
     const sets = [];
-    for(let i=0;i<numSets;i++) sets.push({reps:'',weight:'',done:false});
-    return {name, sets, rpeAdjust:null};
+    for(let i=0;i<numSets;i++) sets.push({
+      reps:est.reps||'', weight:est.weight||'', done:false
+    });
+    return {name, sets, rpeAdjust:null, suggestedWeight:est.weight||'', suggestedReps:est.reps||''};
   });
 
-  todayWorkout = {dayIndex, exercises, feeling};
+  todayWorkout = {dayIndex, exercises, feeling, firstSetFeedback: hasEstimate ? null : 'skip'};
   renderWorkout();
-  showToast('训练开始！加油 🔥');
+  if(hasEstimate){
+    showToast('已根据你的力量数据推荐重量 💡');
+  }else{
+    showToast('训练开始！填写力量数据可获得智能推荐 💡');
+  }
 }
 
 function updateSet(exI, setI, field, value){todayWorkout.exercises[exI].sets[setI][field] = value}
@@ -1053,6 +1121,16 @@ function toggleSetDone(exI, setI){
   if(card) card.style.opacity = allDone ? '0.5' : '';
   const allWorkoutDone = todayWorkout.exercises.every(ex=>ex.sets.every(s=>s.done));
   if(allWorkoutDone) showToast('全部动作完成！去做拉伸吧 🧘');
+
+  // First-set feedback: after completing the first set of the first exercise
+  if(exI===0 && setI===0 && s.done && todayWorkout.firstSetFeedback===null){
+    todayWorkout.firstSetFeedback = 'pending';
+    renderWorkout();
+    setTimeout(()=>{
+      const fb = $('#first-set-fb');
+      if(fb) fb.scrollIntoView({behavior:'smooth',block:'center'});
+    },200);
+  }
 }
 
 function startRestTimer(exI){
@@ -1077,6 +1155,25 @@ function startRestTimer(exI){
 }
 
 function adjustRPE(exI, level){todayWorkout.exercises[exI].rpeAdjust = level; renderWorkout()}
+
+function adjustAllWeights(adjustment){
+  // adjustment: 'heavier' = +10%, 'lighter' = -10%, 'perfect' = no change
+  if(adjustment==='perfect'){todayWorkout.firstSetFeedback='done';renderWorkout();return;}
+  const factor = adjustment==='heavier' ? 1.10 : 0.90;
+  todayWorkout.exercises.forEach((ex,ei)=>{
+    if(ei===0 && adjustment==='heavier'){
+      // First exercise already done first set, only adjust remaining sets
+      ex.sets.forEach((s,si)=>{if(si>0&&s.weight>0){s.weight=Math.round(s.weight*factor/2.5)*2.5;if(s.weight<=0)s.weight=2.5;}});
+    }else if(ei>0||adjustment==='lighter'){
+      // Adjust all exercises (for "too heavy" on first, adjust everything including current)
+      ex.sets.forEach(s=>{if(s.weight>0){s.weight=Math.round(s.weight*factor/2.5)*2.5;if(s.weight<=0)s.weight=2.5;}});
+    }
+  });
+  todayWorkout.firstSetFeedback = 'done';
+  renderWorkout();
+  const msg = adjustment==='heavier'?'已全部上调 ~10% ⬆':'已全部下调 ~10% ⬇';
+  showToast(msg);
+}
 
 function finishWorkout(){
   if(!todayWorkout) return;
