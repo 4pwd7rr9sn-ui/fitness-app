@@ -878,6 +878,36 @@ function estimateWeight(name){
 }
 
 // ===========================
+// REST TIME BY EXERCISE TYPE
+// ===========================
+function getRestTime(name){
+  const heavy = ['杠铃卧推','颈前深蹲','硬拉','杠铃划船','相扑硬拉'];
+  const medium = ['哑铃上斜卧推','双杠臂屈伸','哑铃推举','引体向上','罗马尼亚硬拉','臀推','高脚杯深蹲','窄距卧推','保加利亚分腿蹲','哈克深蹲','坐姿推肩'];
+  const mod = ['器械推胸','器械推肩','阿诺德推举','单腿硬拉','对握下拉','高位下拉','单手钢线下拉','器械划船','农夫行走','芭蕾分腿蹲','哑铃单臂划船','对握下拉（宽距）'];
+  if(heavy.includes(name)) return 180;
+  if(medium.includes(name)) return 120;
+  if(mod.includes(name)) return 90;
+  return 60;
+}
+
+// ===========================
+// WARMUP SETS FOR FIRST EXERCISE
+// ===========================
+function needsWarmup(name){
+  const compounds = ['杠铃卧推','颈前深蹲','硬拉','杠铃划船','哑铃推举','哑铃上斜卧推','罗马尼亚硬拉','臀推','相扑硬拉','高脚杯深蹲','窄距卧推','保加利亚分腿蹲'];
+  return compounds.includes(name);
+}
+function buildWarmupSets(name, workingWeight){
+  if(!workingWeight||workingWeight<=0) return [];
+  const w = parseFloat(workingWeight);
+  return [
+    {reps:'10-12', weight:Math.round(w*0.4/2.5)*2.5||2.5, warmup:true},
+    {reps:'5-8', weight:Math.round(w*0.6/2.5)*2.5||2.5, warmup:true},
+    {reps:'3-5', weight:Math.round(w*0.8/2.5)*2.5||2.5, warmup:true},
+  ];
+}
+
+// ===========================
 // RENDER: Tab 0 — 今日训练
 // ===========================
 function renderWorkout(){
@@ -945,7 +975,7 @@ function renderPreWorkout(container, plan, planDay, dayIndex){
 
 function renderActiveWorkout(container, planDay){
   const exercises = todayWorkout.exercises;
-  const allDone = exercises.every(ex=>ex.sets.every(s=>s.done));
+  const allDone = exercises.every(ex=>ex.sets.filter(s=>!s.warmup).every(s=>s.done));
 
   container.innerHTML = `
     <div class="fade-in-up">
@@ -967,20 +997,27 @@ function renderActiveWorkout(container, planDay){
               <div class="ex-tags" style="margin-top:4px">
                 <span class="ex-tag level">${exData.level}</span>
                 <span class="ex-tag rpe">${exData.rpe}</span>
+                <span style="font-size:10px;color:var(--text2);padding:3px 6px;background:rgba(0,0,0,0.03);border-radius:4px">⏱ ${Math.round(getRestTime(ex.name)/60)} min</span>
               </div>
             </div>
-            <span style="font-size:12px;color:var(--text2)">${doneCount}/${totalSets}</span>
+            <span style="font-size:12px;color:var(--text2)">${ex.sets.filter(s=>!s.warmup&&s.done).length}/${ex.sets.filter(s=>!s.warmup).length} 组</span>
           </div>
           ${exData.details.map(d=>`<div class="detail-tip" style="font-size:13px"><span class="dot">🔴</span><span>${d}</span></div>`).join('')}
           <div style="margin-top:12px">
-            ${ex.sets.map((s,si)=>`
-              <div class="set-group" id="set-${i}-${si}">
-                <label>组${si+1}</label>
-                <input class="set-input" type="number" placeholder="重量kg" value="${s.weight||''}" onchange="updateSet(${i},${si},'weight',this.value)" style="width:60px">
-                <input class="set-input" type="number" placeholder="次数" value="${s.reps||''}" onchange="updateSet(${i},${si},'reps',this.value)" style="width:55px">
-                <button class="set-done-btn ${s.done?'done':''}" id="done-btn-${i}-${si}" onclick="toggleSetDone(${i},${si})">✓</button>
-              </div>
-            `).join('')}
+            ${(()=>{
+              let wuIdx=1, wsIdx=1;
+              return ex.sets.map((s,si)=>{
+                const isWarmup = s.warmup===true;
+                const label = isWarmup ? `🔥 热身${wuIdx++}` : `组${wsIdx++}`;
+                return `
+                <div class="set-group" id="set-${i}-${si}" style="${isWarmup?'background:rgba(0,0,0,0.02);border-radius:8px;padding:4px 8px;margin-bottom:4px':''}">
+                  <label style="${isWarmup?'color:var(--text2);font-size:11px':'font-size:13px'}">${label}</label>
+                  <input class="set-input" type="number" placeholder="重量kg" value="${s.weight||''}" onchange="updateSet(${i},${si},'weight',this.value)" style="width:60px;${isWarmup?'opacity:0.7':''}">
+                  <input class="set-input" type="number" placeholder="次数" value="${s.reps||''}" onchange="updateSet(${i},${si},'reps',this.value)" style="width:55px;${isWarmup?'opacity:0.7':''}">
+                  <button class="set-done-btn ${s.done?'done':''}" id="done-btn-${i}-${si}" onclick="toggleSetDone(${i},${si})">✓</button>
+                </div>`;
+              }).join('');
+            })()}
           </div>
           <div class="adjust-chips">
             <button class="adjust-chip ${ex.rpeAdjust==='heavy'?'chosen':''}" onclick="adjustRPE(${i},'heavy')">太重</button>
@@ -1088,6 +1125,13 @@ function startWorkout(dayIndex, feeling){
     if(feeling==='tired') numSets = Math.max(2, numSets - 1);
     const est = estimateWeight(name);
     const sets = [];
+
+    // Add warmup sets for first exercise if it's a compound
+    if(ei===0 && needsWarmup(name) && est.weight>0){
+      const wu = buildWarmupSets(name, est.weight);
+      wu.forEach(ws => sets.push({...ws, done:false}));
+    }
+
     for(let i=0;i<numSets;i++) sets.push({
       reps:est.reps||'', weight:est.weight||'', done:false
     });
@@ -1116,14 +1160,15 @@ function toggleSetDone(exI, setI){
     }
   }
   const ex = todayWorkout.exercises[exI];
-  const allDone = ex.sets.every(s=>s.done);
+  const workingDone = ex.sets.filter(s=>!s.warmup).every(s=>s.done);
   const card = $(`#ex-card-${exI}`);
-  if(card) card.style.opacity = allDone ? '0.5' : '';
-  const allWorkoutDone = todayWorkout.exercises.every(ex=>ex.sets.every(s=>s.done));
+  if(card) card.style.opacity = workingDone ? '0.5' : '';
+  const allWorkoutDone = todayWorkout.exercises.every(ex=>ex.sets.filter(s=>!s.warmup).every(s=>s.done));
   if(allWorkoutDone) showToast('全部动作完成！去做拉伸吧 🧘');
 
-  // First-set feedback: after completing the first set of the first exercise
-  if(exI===0 && setI===0 && s.done && todayWorkout.firstSetFeedback===null){
+  // First-set feedback: after completing the first WORKING set of the first exercise
+  const isFirstWorkingSet = exI===0 && !s.warmup && todayWorkout.exercises[0].sets.filter((ss,i)=>i<setI&&ss.warmup).length===setI;
+  if(exI===0 && !s.warmup && s.done && todayWorkout.firstSetFeedback===null){
     todayWorkout.firstSetFeedback = 'pending';
     renderWorkout();
     setTimeout(()=>{
@@ -1134,9 +1179,8 @@ function toggleSetDone(exI, setI){
 }
 
 function startRestTimer(exI){
-  const exData = getExercise(todayWorkout.exercises[exI].name);
-  const isHeavy = exData && (exData.rpe.includes('8-9')||exData.rpe.includes('9'));
-  let sec = isHeavy ? 90 : 60;
+  const name = todayWorkout.exercises[exI].name;
+  let sec = getRestTime(name);
   const timer = $('#rest-timer');
   const secEl = $('#rest-sec');
   secEl.textContent = sec;
@@ -1151,22 +1195,19 @@ function startRestTimer(exI){
       if(navigator.vibrate) navigator.vibrate([200,100,200]);
     }
   },1000);
-  setTimeout(()=>{if(timer.classList.contains('show')){clearInterval(restTimerId);timer.classList.remove('show');}},isHeavy?95000:65000);
+  setTimeout(()=>{if(timer.classList.contains('show')){clearInterval(restTimerId);timer.classList.remove('show');}},sec*1000+5000);
 }
 
 function adjustRPE(exI, level){todayWorkout.exercises[exI].rpeAdjust = level; renderWorkout()}
 
 function adjustAllWeights(adjustment){
-  // adjustment: 'heavier' = +10%, 'lighter' = -10%, 'perfect' = no change
   if(adjustment==='perfect'){todayWorkout.firstSetFeedback='done';renderWorkout();return;}
   const factor = adjustment==='heavier' ? 1.10 : 0.90;
   todayWorkout.exercises.forEach((ex,ei)=>{
     if(ei===0 && adjustment==='heavier'){
-      // First exercise already done first set, only adjust remaining sets
-      ex.sets.forEach((s,si)=>{if(si>0&&s.weight>0){s.weight=Math.round(s.weight*factor/2.5)*2.5;if(s.weight<=0)s.weight=2.5;}});
+      ex.sets.forEach((s,si)=>{if(si>0&&!s.warmup&&s.weight>0){s.weight=Math.round(s.weight*factor/2.5)*2.5;if(s.weight<=0)s.weight=2.5;}});
     }else if(ei>0||adjustment==='lighter'){
-      // Adjust all exercises (for "too heavy" on first, adjust everything including current)
-      ex.sets.forEach(s=>{if(s.weight>0){s.weight=Math.round(s.weight*factor/2.5)*2.5;if(s.weight<=0)s.weight=2.5;}});
+      ex.sets.forEach(s=>{if(!s.warmup&&s.weight>0){s.weight=Math.round(s.weight*factor/2.5)*2.5;if(s.weight<=0)s.weight=2.5;}});
     }
   });
   todayWorkout.firstSetFeedback = 'done';
