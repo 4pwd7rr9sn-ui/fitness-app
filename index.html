@@ -4,31 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f2f2f7">
 <title>力量训练 · Strength</title>
 <link rel="manifest" href="manifest.json">
 <style>
 /* ===== Reset & Base ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#000;
-  --card:rgba(255,255,255,0.06);
-  --card-hover:rgba(255,255,255,0.10);
-  --text:#f5f5f7;
-  --text2:#98989d;
-  --blue:#0A84FF;
-  --green:#30D158;
-  --orange:#FF9F0A;
-  --red:#FF453A;
-  --purple:#BF5AF2;
-  --radius-lg:20px;
-  --radius-md:14px;
-  --radius-sm:10px;
+  --bg:#f2f2f7;--card-bg:#fff;
+  --text:#1c1c1e;--text2:#8e8e93;
+  --pink:#FF6B8A;--blue:#007AFF;--orange:#FF9F0A;--green:#34C759;
+  --purple:#AF52DE;--teal:#5AC8FA;--yellow:#FFD60A;
+  --radius-lg:20px;--radius-md:14px;--radius-sm:10px;
   --spring:cubic-bezier(0.34,1.56,0.64,1);
   --ease-out:cubic-bezier(0.16,1,0.3,1);
-  --ease-in-out:cubic-bezier(0.65,0,0.35,1);
   --safe-bottom:env(safe-area-inset-bottom,20px);
+  --shadow:0 2px 16px rgba(0,0,0,0.06);
 }
 html,body{height:100%}
 body{
@@ -36,9 +28,7 @@ body{
   background:var(--bg);color:var(--text);
   -webkit-font-smoothing:antialiased;
   -webkit-tap-highlight-color:transparent;
-  overflow:hidden;
-  user-select:none;
-  -webkit-user-select:none;
+  overflow:hidden;user-select:none;-webkit-user-select:none;
 }
 #app{height:100%;display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;overflow:hidden}
 
@@ -46,22 +36,20 @@ body{
 .tab-bar{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%);
   width:100%;max-width:430px;
-  background:rgba(20,20,22,0.82);
+  background:rgba(255,255,255,0.82);
   backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
-  border-top:0.5px solid rgba(255,255,255,0.12);
+  border-top:0.5px solid rgba(0,0,0,0.08);
   display:flex;justify-content:space-around;
-  padding:6px 0 var(--safe-bottom);
-  z-index:100;
+  padding:6px 0 var(--safe-bottom);z-index:100;
 }
 .tab-btn{
   display:flex;flex-direction:column;align-items:center;gap:3px;
   background:none;border:none;color:var(--text2);
   font-size:10px;font-weight:500;padding:4px 12px;
-  transition:color 0.2s var(--ease-out);
-  cursor:pointer;
+  transition:color 0.2s var(--ease-out);cursor:pointer;
 }
 .tab-btn svg{width:24px;height:24px;transition:transform 0.2s var(--spring)}
-.tab-btn.active{color:var(--blue)}
+.tab-btn.active{color:var(--pink)}
 .tab-btn.active svg{transform:scale(1.08)}
 .tab-btn:active svg{transform:scale(0.92)}
 
@@ -72,13 +60,9 @@ body{
   padding:16px 16px 100px;
   opacity:0;transform:translateX(60px);
   transition:opacity 0.35s var(--ease-out),transform 0.45s var(--spring);
-  pointer-events:none;
-  -webkit-overflow-scrolling:touch;
+  pointer-events:none;-webkit-overflow-scrolling:touch;
 }
-.page.active{
-  opacity:1;transform:translateX(0);
-  pointer-events:auto;
-}
+.page.active{opacity:1;transform:translateX(0);pointer-events:auto}
 .page.exit{opacity:0;transform:translateX(-60px)}
 
 /* ===== Header ===== */
@@ -86,15 +70,23 @@ body{
 
 /* ===== Cards ===== */
 .card{
-  background:var(--card);border-radius:var(--radius-lg);
+  background:var(--card-bg);border-radius:var(--radius-lg);
   padding:16px;margin-bottom:12px;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:0.5px solid rgba(255,255,255,0.08);
-  transition:transform 0.2s var(--spring),background 0.2s var(--ease-out);
+  box-shadow:var(--shadow);
+  transition:transform 0.2s var(--spring),box-shadow 0.2s var(--ease-out);
+  border-left:3px solid transparent;
 }
-.card:active{transform:scale(0.98);background:var(--card-hover)}
+.card:active{transform:scale(0.98);box-shadow:0 1px 8px rgba(0,0,0,0.04)}
 .card-header{font-size:16px;font-weight:600;margin-bottom:8px}
 .card-sub{font-size:13px;color:var(--text2);line-height:1.5}
+
+/* ===== Card accent colors per muscle ===== */
+.card.chest{border-left-color:var(--pink)}
+.card.shoulder{border-left-color:var(--orange)}
+.card.back{border-left-color:var(--blue)}
+.card.arm{border-left-color:var(--purple)}
+.card.leg{border-left-color:var(--green)}
+.card.core{border-left-color:var(--teal)}
 
 /* ===== Buttons ===== */
 .btn{
@@ -105,74 +97,80 @@ body{
   -webkit-tap-highlight-color:transparent;
 }
 .btn:active{transform:scale(0.96)}
-.btn-primary{background:var(--blue);color:#fff;width:100%}
-.btn-secondary{background:rgba(255,255,255,0.1);color:var(--text)}
-.btn-danger{background:rgba(255,69,58,0.2);color:var(--red)}
+.btn-primary{background:var(--pink);color:#fff;width:100%}
+.btn-secondary{background:rgba(0,0,0,0.05);color:var(--text)}
 .btn-sm{padding:6px 14px;font-size:13px;border-radius:8px}
-.btn-icon{width:36px;height:36px;padding:0;border-radius:50%;background:rgba(255,255,255,0.08)}
-.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.btn-icon{width:36px;height:36px;padding:0;border-radius:50%;background:rgba(0,0,0,0.05)}
 
 /* ===== Muscle Group Pills ===== */
 .muscle-pills{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .muscle-pills::-webkit-scrollbar{display:none}
 .muscle-pill{
-  flex-shrink:0;width:56px;height:56px;border-radius:50%;
-  background:var(--card);border:1px solid rgba(255,255,255,0.06);
-  color:var(--text2);font-size:11px;font-weight:590;
+  flex-shrink:0;width:50px;height:50px;border-radius:50%;
+  background:var(--card-bg);border:2px solid transparent;
+  color:var(--text2);font-size:20px;font-weight:590;
   display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:all 0.3s var(--spring);
+  cursor:pointer;transition:all 0.3s var(--spring);box-shadow:var(--shadow);
 }
-.muscle-pill.active{background:var(--blue);color:#fff;border-color:var(--blue);transform:scale(1.05);box-shadow:0 0 20px rgba(10,132,255,0.3)}
+.muscle-pill.active{transform:scale(1.1)}
+.muscle-pill.chest.active{background:#FFE5EC;border-color:var(--pink);color:var(--pink)}
+.muscle-pill.shoulder.active{background:#FFF3E0;border-color:var(--orange);color:var(--orange)}
+.muscle-pill.back.active{background:#E8F2FF;border-color:var(--blue);color:var(--blue)}
+.muscle-pill.arm.active{background:#F3E8FF;border-color:var(--purple);color:var(--purple)}
+.muscle-pill.leg.active{background:#E8F8ED;border-color:var(--green);color:var(--green)}
+.muscle-pill.core.active{background:#E8FAFB;border-color:var(--teal);color:var(--teal)}
 
 /* ===== Exercise Card ===== */
 .ex-card{cursor:pointer}
 .ex-card .ex-name{font-size:16px;font-weight:600}
-.ex-card .ex-tags{display:flex;gap:6px;margin-top:6px}
+.ex-tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 .ex-tag{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:500}
-.ex-tag.level{background:rgba(10,132,255,0.15);color:var(--blue)}
-.ex-tag.rpe{background:rgba(255,159,10,0.15);color:var(--orange)}
+.ex-tag.level{background:rgba(0,122,255,0.1);color:var(--blue)}
+.ex-tag.rpe{background:rgba(255,159,10,0.1);color:var(--orange)}
+.ex-tag.gender{background:rgba(255,107,138,0.1);color:var(--pink)}
 
 /* ===== Detail Panel ===== */
 .detail-overlay{
   position:fixed;inset:0;z-index:200;
-  background:rgba(0,0,0,0.6);
-  opacity:0;pointer-events:none;
-  transition:opacity 0.3s;
+  background:rgba(0,0,0,0.3);
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
 }
 .detail-overlay.open{opacity:1;pointer-events:auto}
 .detail-panel{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);
   width:100%;max-width:430px;max-height:80vh;
-  background:rgba(28,28,30,0.98);
+  background:rgba(255,255,255,0.98);
   backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
-  border-radius:20px 20px 0 0;
-  padding:24px 16px var(--safe-bottom);
+  border-radius:20px 20px 0 0;padding:24px 16px var(--safe-bottom);
   z-index:201;overflow-y:auto;
   transition:transform 0.5s var(--spring);
 }
 .detail-panel.open{transform:translateX(-50%) translateY(0)}
-.detail-handle{width:36px;height:5px;background:rgba(255,255,255,0.3);border-radius:3px;margin:0 auto 16px}
+.detail-handle{width:36px;height:5px;background:rgba(0,0,0,0.15);border-radius:3px;margin:0 auto 16px}
 .detail-title{font-size:20px;font-weight:700;margin-bottom:12px}
 .detail-section{margin-bottom:16px}
 .detail-section h4{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
 .detail-tip{display:flex;gap:8px;padding:8px 0;font-size:14px;line-height:1.5}
-.detail-tip .dot{color:var(--red);flex-shrink:0}
+.detail-tip .dot{color:var(--pink);flex-shrink:0}
+.video-link{
+  display:flex;align-items:center;gap:8px;padding:12px 16px;
+  background:rgba(255,107,138,0.08);border-radius:var(--radius-sm);
+  color:var(--pink);font-size:14px;font-weight:500;text-decoration:none;
+  transition:all 0.2s var(--spring);
+}
+.video-link:active{transform:scale(0.96);background:rgba(255,107,138,0.15)}
 
 /* ===== State Assessment ===== */
 .assess-overlay{
   position:fixed;inset:0;z-index:200;
-  background:rgba(0,0,0,0.7);
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;
-  transition:opacity 0.3s;
+  background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
 }
 .assess-overlay.open{opacity:1;pointer-events:auto}
 .assess-card{
-  background:rgba(28,28,30,0.98);
-  backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
-  border-radius:var(--radius-lg);
+  background:#fff;border-radius:var(--radius-lg);
   padding:24px;width:calc(100% - 48px);max-width:380px;
-  border:0.5px solid rgba(255,255,255,0.1);
+  box-shadow:0 8px 32px rgba(0,0,0,0.12);
   transform:scale(0.9) translateY(20px);
   transition:transform 0.5s var(--spring);
 }
@@ -181,13 +179,13 @@ body{
 .assess-card p{font-size:14px;color:var(--text2);margin-bottom:20px}
 .assess-option{
   width:100%;padding:14px 16px;border-radius:var(--radius-sm);
-  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);
+  background:rgba(0,0,0,0.03);border:1.5px solid transparent;
   color:var(--text);font-size:16px;font-family:inherit;
   display:flex;align-items:center;gap:10px;
   cursor:pointer;margin-bottom:8px;
   transition:all 0.2s var(--spring);
 }
-.assess-option:active{transform:scale(0.97);background:rgba(255,255,255,0.1)}
+.assess-option:active{transform:scale(0.97);border-color:var(--pink);background:rgba(255,107,138,0.05)}
 .assess-option .emoji{font-size:24px}
 
 /* ===== Workout Set ===== */
@@ -195,44 +193,56 @@ body{
 .set-group label{font-size:13px;color:var(--text2);width:40px}
 .set-input{
   width:70px;padding:8px 10px;border-radius:8px;
-  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  background:rgba(0,0,0,0.03);border:1px solid rgba(0,0,0,0.1);
   color:var(--text);font-size:15px;font-family:inherit;text-align:center;
 }
-.set-input:focus{outline:none;border-color:var(--blue)}
+.set-input:focus{outline:none;border-color:var(--pink)}
 .set-done-btn{
-  width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.2);
+  width:32px;height:32px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);
   background:none;color:var(--text2);font-size:16px;
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;transition:all 0.3s var(--spring);
 }
 .set-done-btn.done{background:var(--green);border-color:var(--green);color:#fff}
 
+/* ===== Rest Timer ===== */
+.rest-timer{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
+  width:120px;height:120px;border-radius:50%;
+  background:#fff;box-shadow:0 8px 40px rgba(0,0,0,0.15);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:250;pointer-events:none;
+  transition:transform 0.4s var(--spring);
+}
+.rest-timer.show{transform:translate(-50%,-50%) scale(1)}
+.rest-timer .seconds{font-size:42px;font-weight:700;color:var(--pink)}
+.rest-timer .label{font-size:12px;color:var(--text2)}
+
 /* ===== Toast ===== */
 .toast{
   position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120px);
-  background:rgba(28,28,30,0.95);backdrop-filter:blur(20px);
+  background:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.1);
   color:var(--text);padding:10px 20px;border-radius:20px;
   font-size:14px;font-weight:500;z-index:300;
-  border:0.5px solid rgba(255,255,255,0.1);
   transition:transform 0.5s var(--spring);
 }
 .toast.show{transform:translateX(-50%) translateY(0)}
 
 /* ===== Calendar Heatmap ===== */
 .cal-grid{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px}
-.cal-cell{width:13px;height:13px;border-radius:3px;background:rgba(255,255,255,0.04)}
-.cal-cell.trained{background:var(--green);opacity:0.6}
-.cal-cell.trained-2{background:var(--green);opacity:0.8}
-.cal-cell.trained-3{background:var(--green);opacity:1}
+.cal-cell{width:13px;height:13px;border-radius:3px;background:rgba(0,0,0,0.04)}
+.cal-cell.trained{background:var(--pink);opacity:0.5}
+.cal-cell.trained-2{background:var(--pink);opacity:0.75}
+.cal-cell.trained-3{background:var(--pink);opacity:1}
 
 /* ===== Form Inputs ===== */
 .form-input{
   width:100%;padding:12px 14px;border-radius:var(--radius-sm);
-  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  background:rgba(0,0,0,0.03);border:1px solid rgba(0,0,0,0.1);
   color:var(--text);font-size:15px;font-family:inherit;
   margin-bottom:10px;transition:border-color 0.2s;
 }
-.form-input:focus{outline:none;border-color:var(--blue)}
+.form-input:focus{outline:none;border-color:var(--pink)}
 .form-label{font-size:13px;color:var(--text2);margin-bottom:4px;display:block}
 .form-row{display:flex;gap:10px}
 .form-row>*{flex:1}
@@ -241,25 +251,50 @@ body{
 .pr-badge{
   display:inline-flex;align-items:center;gap:4px;
   padding:4px 8px;border-radius:6px;
-  background:rgba(255,159,10,0.15);color:var(--orange);
+  background:rgba(255,159,10,0.1);color:var(--orange);
   font-size:11px;font-weight:600;
 }
 
 /* ===== RPE Adjustment Chips ===== */
 .adjust-chips{display:flex;gap:6px;margin-top:8px}
 .adjust-chip{
-  padding:5px 12px;border-radius:14px;border:1px solid rgba(255,255,255,0.12);
+  padding:5px 12px;border-radius:14px;border:1px solid rgba(0,0,0,0.1);
   background:none;color:var(--text2);font-size:12px;cursor:pointer;
   transition:all 0.2s var(--spring);
 }
-.adjust-chip.chosen{background:var(--blue);border-color:var(--blue);color:#fff}
+.adjust-chip.chosen{background:var(--pink);border-color:var(--pink);color:#fff}
 .adjust-chip:active{transform:scale(0.95)}
+
+/* ===== Motivation Quote ===== */
+.quote-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+.quote-overlay.open{opacity:1;pointer-events:auto}
+.quote-card{
+  background:#fff;border-radius:var(--radius-lg);
+  padding:32px 24px;width:calc(100% - 48px);max-width:360px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.12);text-align:center;
+  transform:scale(0.8);transition:transform 0.6s var(--spring);
+}
+.quote-overlay.open .quote-card{transform:scale(1)}
+.quote-card .q-emoji{font-size:48px;margin-bottom:12px}
+.quote-card .q-text{font-size:17px;font-weight:600;line-height:1.6;margin-bottom:16px}
+.quote-card .q-close{
+  padding:10px 32px;border-radius:20px;border:none;
+  background:var(--pink);color:#fff;font-size:15px;font-weight:590;
+  cursor:pointer;transition:transform 0.2s var(--spring);
+}
+.quote-card .q-close:active{transform:scale(0.95)}
 
 /* ===== Animations ===== */
 @keyframes checkPop{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
 .check-pop{animation:checkPop 0.4s var(--spring)}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .fade-in-up{animation:fadeInUp 0.5s var(--spring)}
+@keyframes bounceIn{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.08)}70%{transform:scale(0.9)}100%{transform:scale(1);opacity:1}}
+.bounce-in{animation:bounceIn 0.6s var(--spring)}
 
 /* ===== Scrollbar ===== */
 .page::-webkit-scrollbar{width:0}
@@ -269,9 +304,28 @@ body{
 .empty-state .icon{font-size:48px;margin-bottom:12px}
 .empty-state p{font-size:14px}
 
+/* ===== Gender Toggle ===== */
+.gender-toggle{display:flex;gap:8px}
+.gender-btn{
+  flex:1;padding:12px;border-radius:var(--radius-sm);
+  border:2px solid rgba(0,0,0,0.08);background:#fff;
+  font-size:16px;font-family:inherit;cursor:pointer;
+  transition:all 0.2s var(--spring);text-align:center;
+}
+.gender-btn.active-male{background:#E8F2FF;border-color:var(--blue);color:var(--blue)}
+.gender-btn.active-female{background:#FFE5EC;border-color:var(--pink);color:var(--pink)}
+.gender-btn:active{transform:scale(0.96)}
+
+/* ===== Warmup Card ===== */
+.warmup-card{
+  background:linear-gradient(135deg,rgba(255,107,138,0.06),rgba(255,159,10,0.06));
+  border-left:3px solid var(--pink);padding:14px 16px;border-radius:var(--radius-md);
+  margin-bottom:12px;font-size:13px;line-height:1.8;
+}
+
 /* ===== Workout list ===== */
 .workout-day{margin-bottom:16px}
-.workout-day h4{font-size:15px;font-weight:600;margin-bottom:8px;color:var(--blue)}
+.workout-day h4{font-size:15px;font-weight:600;margin-bottom:8px;color:var(--pink)}
 </style>
 </head>
 <body>
@@ -319,7 +373,7 @@ body{
     <div id="exercise-list"></div>
   </div>
 
-  <!-- Page 2: 训练记录 -->
+  <!-- Page 2: 记录 -->
   <div class="page" id="page-2">
     <div class="page-header">训练记录</div>
     <div id="log-content"></div>
@@ -349,6 +403,17 @@ body{
   <div class="assess-card" id="assess-card"></div>
 </div>
 
+<!-- Quote Overlay -->
+<div class="quote-overlay" id="quote-overlay">
+  <div class="quote-card" id="quote-card"></div>
+</div>
+
+<!-- Rest Timer -->
+<div class="rest-timer" id="rest-timer">
+  <span class="seconds" id="rest-sec">90</span>
+  <span class="label">秒休息</span>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
@@ -358,230 +423,187 @@ body{
 // ===========================
 const EXERCISES = [
   // 胸
-  {id:'chest_1',muscle:'chest',name:'杠铃卧推',level:'新手',rpe:'RPE 8-9',
+  {id:'chest_1',muscle:'chest',name:'杠铃卧推',level:'新手',rpe:'RPE 8-9',gender:'both',
    details:['肩胛骨全程收紧下沉','触胸点：乳头连线稍下方','脚踩实地面，腿驱动启动','小臂垂直地面，握距1.5倍肩宽'],
    mindMuscle:'推起时意念集中在胸大肌收缩，想象把杠铃"推弯"',
-   sets:'4组 × (15→12→10→8) 倒金字塔加重',
-   stretch:'doorway胸大肌拉伸'},
-  {id:'chest_2',muscle:'chest',name:'哑铃上斜卧推',level:'新手',rpe:'RPE 8-9',
+   sets:'4组 × (15→12→10→8) 倒金字塔加重',stretch:'doorway胸大肌拉伸'},
+  {id:'chest_2',muscle:'chest',name:'哑铃上斜卧推',level:'新手',rpe:'RPE 8-9',gender:'both',
    details:['上斜凳30-45°，过高练到前束','手肘与躯干呈45°，不外展','哑铃下放至上胸两侧','顶峰用力挤压上胸1秒'],
-   mindMuscle:'想象上胸把哑铃"托起"而非"推出"',
-   sets:'4组 × 10-12次',
-   stretch:'双手背后交扣扩胸'},
-  {id:'chest_3',muscle:'chest',name:'双杠臂屈伸',level:'中级',rpe:'RPE 8-9',
+   mindMuscle:'想象上胸把哑铃"托起"而非"推出"',sets:'4组 × 10-12次',stretch:'双手背后交扣扩胸'},
+  {id:'chest_3',muscle:'chest',name:'双杠臂屈伸',level:'中级',rpe:'RPE 8-9',gender:'both',
    details:['身体前倾30°=练胸，直立=练三头','下降幅度：肩低于肘','手肘沿身体后侧打开','上升时不要锁死肘关节'],
-   mindMuscle:'感受胸下沿的拉伸和收缩',
-   sets:'3组 × 8-12次',
-   stretch:'门框单侧胸拉伸'},
-  {id:'chest_4',muscle:'chest',name:'哑铃飞鸟',level:'中级',rpe:'RPE 8-9',
+   mindMuscle:'感受胸下沿的拉伸和收缩',sets:'3组 × 8-12次',stretch:'门框单侧胸拉伸'},
+  {id:'chest_4',muscle:'chest',name:'哑铃飞鸟',level:'中级',rpe:'RPE 8-9',gender:'both',
    details:['手肘保持微弯且角度不变','下放时感受胸肌拉伸','合拢时意念挤压胸中缝','不要用太重，控制为主'],
-   mindMuscle:'想象"抱住一棵大树"的感觉',
-   sets:'3组 × 12-15次',
-   stretch:'doorway胸大肌拉伸'},
-  {id:'chest_5',muscle:'chest',name:'绳索夹胸',level:'中级',rpe:'RPE 8',
+   mindMuscle:'想象"抱住一棵大树"的感觉',sets:'3组 × 12-15次',stretch:'doorway胸大肌拉伸'},
+  {id:'chest_5',muscle:'chest',name:'绳索夹胸',level:'中级',rpe:'RPE 8',gender:'both',
    details:['身体微前倾，一脚前一脚后','手臂保持微弯轨迹','顶峰交叉时挤压1-2秒','离心阶段控制缓慢回放'],
-   mindMuscle:'意念集中在胸中缝的挤压',
-   sets:'3组 × 12-15次',
-   stretch:'双手背后交扣扩胸'},
-  {id:'chest_6',muscle:'chest',name:'上斜哑铃飞鸟',level:'中级',rpe:'RPE 8',
+   mindMuscle:'意念集中在胸中缝的挤压',sets:'3组 × 12-15次',stretch:'双手背后交扣扩胸'},
+  {id:'chest_6',muscle:'chest',name:'上斜哑铃飞鸟',level:'中级',rpe:'RPE 8',gender:'both',
    details:['凳角30°，哑铃轨迹呈弧线','下放至上胸高度即可','全程手肘角度不变','轻重量高次数，感受上胸'],
-   sets:'3组 × 12-15次',
-   stretch:'门框单侧胸拉伸'},
-  {id:'chest_7',muscle:'chest',name:'俯卧撑',level:'新手',rpe:'RPE 7-9',
+   sets:'3组 × 12-15次',stretch:'门框单侧胸拉伸'},
+  {id:'chest_7',muscle:'chest',name:'俯卧撑',level:'新手',rpe:'RPE 7-9',gender:'both',
    details:['核心收紧不塌腰，身体呈一条线','手肘与身体约45°','胸部触地或接近地面','上升时呼气发力'],
-   mindMuscle:'把地面想象成杠铃，用胸部发力推',
-   sets:'3组 × 力竭',
-   stretch:'doorway胸大肌拉伸'},
-  {id:'chest_8',muscle:'chest',name:'器械推胸',level:'新手',rpe:'RPE 8',
+   mindMuscle:'把地面想象成杠铃，用胸部发力推',sets:'3组 × 力竭',stretch:'doorway胸大肌拉伸'},
+  {id:'chest_8',muscle:'chest',name:'器械推胸',level:'新手',rpe:'RPE 8',gender:'both',
    details:['肩胛贴紧靠垫','手把对齐胸中部','推至顶端不要锁死肘','离心阶段2-3秒'],
-   sets:'3组 × 10-12次',
-   stretch:'双手背后交扣扩胸'},
+   sets:'3组 × 10-12次',stretch:'双手背后交扣扩胸'},
 
   // 肩
-  {id:'shld_1',muscle:'shoulder',name:'哑铃推举',level:'新手',rpe:'RPE 8-9',
+  {id:'shld_1',muscle:'shoulder',name:'哑铃推举',level:'新手',rpe:'RPE 8-9',gender:'both',
    details:['核心收紧不塌腰，避免过度弓背','哑铃轨迹呈弧线而非直线','底部手肘约90°','全程控制，不借力弹起'],
-   mindMuscle:'想象把哑铃"穿透天花板"',
-   sets:'4组 × (15→12→10→8)',
-   stretch:'背后握手拉伸'},
-  {id:'shld_2',muscle:'shoulder',name:'Y字侧平举',level:'中级',rpe:'RPE 8',
+   mindMuscle:'想象把哑铃"穿透天花板"',sets:'4组 × (15→12→10→8)',stretch:'背后握手拉伸'},
+  {id:'shld_2',muscle:'shoulder',name:'Y字侧平举',level:'中级',rpe:'RPE 8',gender:'both',
    details:['沉肩！避免斜方肌代偿','身体微前倾，哑铃从身前举起','手臂呈Y字轨迹（与身体约30°）','顶峰停留1秒'],
-   mindMuscle:'意念只用"肩膀两侧"把哑铃抬起',
-   sets:'3组 × 12-15次',
-   stretch:'肩部十字拉伸'},
-  {id:'shld_3',muscle:'shoulder',name:'绳索面拉',level:'中级',rpe:'RPE 8',
+   mindMuscle:'意念只用"肩膀两侧"把哑铃抬起',sets:'3组 × 12-15次',stretch:'肩部十字拉伸'},
+  {id:'shld_3',muscle:'shoulder',name:'绳索面拉',level:'中级',rpe:'RPE 8',gender:'both',
    details:['绳索拉向眼镜/鼻梁高度','手肘高于手腕，向外旋转','顶峰挤压后束和菱形肌','站位稍远增加张力'],
-   mindMuscle:'想象用后脑勺夹一支笔',
-   sets:'3组 × 15-20次',
-   stretch:'背后握手拉伸'},
-  {id:'shld_4',muscle:'shoulder',name:'哑铃前平举',level:'新手',rpe:'RPE 8',
+   mindMuscle:'想象用后脑勺夹一支笔',sets:'3组 × 15-20次',stretch:'背后握手拉伸'},
+  {id:'shld_4',muscle:'shoulder',name:'哑铃前平举',level:'新手',rpe:'RPE 8',gender:'both',
    details:['不借力摆动，身体稳定','哑铃举至肩高即可','可以交替或同时进行','控制离心下降2秒'],
-   sets:'3组 × 12-15次',
-   stretch:'肩部十字拉伸'},
-  {id:'shld_5',muscle:'shoulder',name:'阿诺德推举',level:'高级',rpe:'RPE 8-9',
+   sets:'3组 × 12-15次',stretch:'肩部十字拉伸'},
+  {id:'shld_5',muscle:'shoulder',name:'阿诺德推举',level:'高级',rpe:'RPE 8-9',gender:'both',
    details:['旋转全程控制，不是甩','底部掌心朝脸，顶部掌心朝前','旋转和推举同步进行','核心全程收紧防侧弯'],
-   sets:'3组 × 8-12次',
-   stretch:'背后握手拉伸'},
-  {id:'shld_6',muscle:'shoulder',name:'俯身飞鸟',level:'中级',rpe:'RPE 8',
+   sets:'3组 × 8-12次',stretch:'背后握手拉伸'},
+  {id:'shld_6',muscle:'shoulder',name:'俯身飞鸟',level:'中级',rpe:'RPE 8',gender:'both',
    details:['俯身至躯干接近水平','手肘微弯，向后上方打开','顶峰挤压后束1秒','不要用惯性摆动'],
-   mindMuscle:'想象用后束"扇动翅膀"',
-   sets:'3组 × 12-15次',
-   stretch:'肩部十字拉伸'},
-  {id:'shld_7',muscle:'shoulder',name:'杠铃提拉',level:'高级',rpe:'RPE 8',
+   mindMuscle:'想象用后束"扇动翅膀"',sets:'3组 × 12-15次',stretch:'肩部十字拉伸'},
+  {id:'shld_7',muscle:'shoulder',name:'杠铃提拉',level:'高级',rpe:'RPE 8',gender:'both',
    details:['窄握（与肩同宽或稍窄）','杠铃贴近身体上拉','肘部高于手腕','不要超过下巴高度'],
-   sets:'3组 × 8-12次',
-   stretch:'背后握手拉伸'},
-  {id:'shld_8',muscle:'shoulder',name:'器械推肩',level:'新手',rpe:'RPE 8',
+   sets:'3组 × 8-12次',stretch:'背后握手拉伸'},
+  {id:'shld_8',muscle:'shoulder',name:'器械推肩',level:'新手',rpe:'RPE 8',gender:'both',
    details:['坐姿靠背，腰贴紧','把手与肩同高开始','推至接近伸直但不锁死','底部不放松保持张力'],
-   sets:'3组 × 10-12次',
-   stretch:'肩部十字拉伸'},
+   sets:'3组 × 10-12次',stretch:'肩部十字拉伸'},
 
   // 背
-  {id:'back_1',muscle:'back',name:'引体向上',level:'中级',rpe:'RPE 8-9',
+  {id:'back_1',muscle:'back',name:'引体向上',level:'中级',rpe:'RPE 8-9',gender:'both',
    details:['启动时先沉肩（肩胛下抑）再拉','下巴过杠即可，不追求颈后','全程核心收紧不晃动','离心2-3秒缓慢下放'],
-   mindMuscle:'想象"肘部向下后方拉动"而非手臂拉',
-   sets:'3组 × 6-10次',
-   stretch:'悬挂拉伸'},
-  {id:'back_2',muscle:'back',name:'杠铃划船',level:'中级',rpe:'RPE 8-9',
+   mindMuscle:'想象"肘部向下后方拉动"而非手臂拉',sets:'3组 × 6-10次',stretch:'悬挂拉伸'},
+  {id:'back_2',muscle:'back',name:'杠铃划船',level:'中级',rpe:'RPE 8-9',gender:'both',
    details:['腰背挺直不变形，髋铰链前倾','杠铃沿大腿前侧拉向小腹','顶峰挤压背部1秒','腿部微弯，重心稳定'],
-   mindMuscle:'用"肘部"启动拉动，不是用手臂',
-   sets:'4组 × 8-12次',
-   stretch:'猫牛式'},
-  {id:'back_3',muscle:'back',name:'单手钢线下拉',level:'中级',rpe:'RPE 8',
+   mindMuscle:'用"肘部"启动拉动，不是用手臂',sets:'4组 × 8-12次',stretch:'猫牛式'},
+  {id:'back_3',muscle:'back',name:'单手钢线下拉',level:'中级',rpe:'RPE 8',gender:'both',
    details:['意念肘部驱动而非手臂发力','拉到肩旁，顶峰挤压背阔','身体不旋转借力','离心控制缓慢回放'],
-   mindMuscle:'想象腋下夹了一个网球',
-   sets:'3组 × 10-12次/侧',
-   stretch:'悬挂拉伸'},
-  {id:'back_4',muscle:'back',name:'对握下拉',level:'新手',rpe:'RPE 8',
+   mindMuscle:'想象腋下夹了一个网球',sets:'3组 × 10-12次/侧',stretch:'悬挂拉伸'},
+  {id:'back_4',muscle:'back',name:'对握下拉',level:'新手',rpe:'RPE 8',gender:'both',
    details:['对握把手，手掌相对','启动先沉肩再下拉','拉到锁骨高度','身体不过度后仰'],
-   sets:'3组 × 10-12次',
-   stretch:'猫牛式'},
-  {id:'back_5',muscle:'back',name:'器械划船',level:'新手',rpe:'RPE 8',
+   sets:'3组 × 10-12次',stretch:'猫牛式'},
+  {id:'back_5',muscle:'back',name:'器械划船',level:'新手',rpe:'RPE 8',gender:'both',
    details:['肩胛充分收缩夹紧','拉向腹部，肘部贴近身体','离心阶段背部拉伸开','不做爆发力，全程控制'],
-   mindMuscle:'每次拉回都想象"肩胛骨中间夹张纸"',
-   sets:'3组 × 10-12次',
-   stretch:'悬挂拉伸'},
-  {id:'back_6',muscle:'back',name:'硬拉',level:'高级',rpe:'RPE 8-9',
+   mindMuscle:'每次拉回都想象"肩胛骨中间夹张纸"',sets:'3组 × 10-12次',stretch:'悬挂拉伸'},
+  {id:'back_6',muscle:'back',name:'硬拉',level:'高级',rpe:'RPE 8-9',gender:'both',
    details:['髋铰链启动，不是先弯腰','杠铃贴近小腿大腿上拉','全程背部中立不弓不凹','站起时臀肌锁紧'],
-   sets:'3组 × 5-8次',
-   stretch:'猫牛式'},
-  {id:'back_7',muscle:'back',name:'高位下拉',level:'新手',rpe:'RPE 8',
+   sets:'3组 × 5-8次',stretch:'猫牛式'},
+  {id:'back_7',muscle:'back',name:'高位下拉',level:'新手',rpe:'RPE 8',gender:'both',
    details:['握距约1.5倍肩宽','先沉肩再下拉','拉到锁骨/上胸位置','不借身体后仰的力'],
-   sets:'3组 × 10-12次',
-   stretch:'悬挂拉伸'},
-  {id:'back_8',muscle:'back',name:'哑铃单臂划船',level:'新手',rpe:'RPE 8',
+   sets:'3组 × 10-12次',stretch:'悬挂拉伸'},
+  {id:'back_8',muscle:'back',name:'哑铃单臂划船',level:'新手',rpe:'RPE 8',gender:'both',
    details:['一手撑凳，脊柱中立不扭曲','哑铃拉向髋部而非胸前','顶峰挤压背部肌肉','控制下落不要自由落体'],
-   sets:'3组 × 10-12次/侧',
-   stretch:'猫牛式'},
+   sets:'3组 × 10-12次/侧',stretch:'猫牛式'},
 
   // 手臂
-  {id:'arm_1',muscle:'arm',name:'杠铃弯举',level:'新手',rpe:'RPE 8',
+  {id:'arm_1',muscle:'arm',name:'杠铃弯举',level:'新手',rpe:'RPE 8',gender:'both',
    details:['大臂固定在身体两侧不晃动','手腕中立不弯曲借力','顶峰挤压二头1秒','离心3秒缓慢下放'],
-   mindMuscle:'想象二头肌像气球一样被"充气"',
-   sets:'3组 × 10-12次',
-   stretch:'二头靠墙拉伸'},
-  {id:'arm_2',muscle:'arm',name:'仰卧臂屈伸',level:'中级',rpe:'RPE 8',
+   mindMuscle:'想象二头肌像气球一样被"充气"',sets:'3组 × 10-12次',stretch:'二头靠墙拉伸'},
+  {id:'arm_2',muscle:'arm',name:'仰卧臂屈伸',level:'中级',rpe:'RPE 8',gender:'both',
    details:['肘尖朝天保持固定','哑铃下放至耳朵两侧','上升时不要锁死肘部','控制轨迹不晃动'],
-   mindMuscle:'意念集中三头肌的长头拉伸与收缩',
-   sets:'3组 × 10-12次',
-   stretch:'三头过顶拉伸'},
-  {id:'arm_3',muscle:'arm',name:'绳索下压',level:'新手',rpe:'RPE 8',
+   mindMuscle:'意念集中三头肌的长头拉伸与收缩',sets:'3组 × 10-12次',stretch:'三头过顶拉伸'},
+  {id:'arm_3',muscle:'arm',name:'绳索下压',level:'新手',rpe:'RPE 8',gender:'both',
    details:['身体微前倾，肘固定在身体两侧','压至底部时手腕微微外旋','顶峰挤压三头','离心阶段控制回放'],
-   sets:'3组 × 12-15次',
-   stretch:'三头过顶拉伸'},
-  {id:'arm_4',muscle:'arm',name:'锤式弯举',level:'新手',rpe:'RPE 8',
+   sets:'3组 × 12-15次',stretch:'三头过顶拉伸'},
+  {id:'arm_4',muscle:'arm',name:'锤式弯举',level:'新手',rpe:'RPE 8',gender:'both',
    details:['对握（掌心相对）握法','大臂固定，前臂弯举','目标肱肌和肱桡肌','可以交替或同时'],
-   sets:'3组 × 10-12次',
-   stretch:'二头靠墙拉伸'},
-  {id:'arm_5',muscle:'arm',name:'集中弯举',level:'中级',rpe:'RPE 8-9',
+   sets:'3组 × 10-12次',stretch:'二头靠墙拉伸'},
+  {id:'arm_5',muscle:'arm',name:'集中弯举',level:'中级',rpe:'RPE 8-9',gender:'both',
    details:['肘抵大腿内侧形成支点','完全孤立二头肌','底部完全伸展，顶峰用力收缩','用较轻重量做高质量'],
-   mindMuscle:'最好的二头孤立动作，专注顶峰收缩',
-   sets:'3组 × 10-12次/侧',
-   stretch:'二头靠墙拉伸'},
-  {id:'arm_6',muscle:'arm',name:'窄距卧推',level:'中级',rpe:'RPE 8-9',
+   mindMuscle:'最好的二头孤立动作，专注顶峰收缩',sets:'3组 × 10-12次/侧',stretch:'二头靠墙拉伸'},
+  {id:'arm_6',muscle:'arm',name:'窄距卧推',level:'中级',rpe:'RPE 8-9',gender:'both',
    details:['握距与肩同宽或稍窄','肘部贴近身体','下放至下胸位置','三头主导发力'],
-   sets:'3组 × 8-12次',
-   stretch:'三头过顶拉伸'},
-  {id:'arm_7',muscle:'arm',name:'牧师凳弯举',level:'中级',rpe:'RPE 8',
-   details:['腋窝卡在凳顶，大臂完全贴垫','底部不锁死保持张力','顶峰挤压后控制下放','全程二头张力',
-   ],sets:'3组 × 10-12次',
-   stretch:'二头靠墙拉伸'},
-  {id:'arm_8',muscle:'arm',name:'过头臂屈伸',level:'中级',rpe:'RPE 8',
+   sets:'3组 × 8-12次',stretch:'三头过顶拉伸'},
+  {id:'arm_7',muscle:'arm',name:'牧师凳弯举',level:'中级',rpe:'RPE 8',gender:'both',
+   details:['腋窝卡在凳顶，大臂完全贴垫','底部不锁死保持张力','顶峰挤压后控制下放','全程二头张力'],
+   sets:'3组 × 10-12次',stretch:'二头靠墙拉伸'},
+  {id:'arm_8',muscle:'arm',name:'过头臂屈伸',level:'中级',rpe:'RPE 8',gender:'both',
    details:['肘部贴近耳朵指向天花板','哑铃降至颈后','上升至接近伸直','身体稳定不弓背'],
-   sets:'3组 × 10-12次',
-   stretch:'三头过顶拉伸'},
+   sets:'3组 × 10-12次',stretch:'三头过顶拉伸'},
 
   // 腿
-  {id:'leg_1',muscle:'leg',name:'颈前深蹲',level:'中级',rpe:'RPE 8-9',
+  {id:'leg_1',muscle:'leg',name:'颈前深蹲',level:'中级',rpe:'RPE 8-9',gender:'both',
    details:['肘抬高+胸挺，杠铃架在前束','核心全程收紧防前倾','下蹲至大腿与地面平行或稍低','膝盖与脚尖方向一致'],
-   mindMuscle:'想象"坐椅子"一样垂直下蹲',
-   sets:'4组 × (15→12→10→8)',
-   stretch:'鸽式'},
-  {id:'leg_2',muscle:'leg',name:'单腿硬拉',level:'中级',rpe:'RPE 8',
+   mindMuscle:'想象"坐椅子"一样垂直下蹲',sets:'4组 × (15→12→10→8)',stretch:'鸽式'},
+  {id:'leg_2',muscle:'leg',name:'单腿硬拉',level:'中级',rpe:'RPE 8',gender:'both',
    details:['支撑腿微弯，髋铰链后推','背部中立不弯曲','另一条腿向后伸直作为平衡','哑铃贴近支撑腿小腿'],
-   mindMuscle:'感受支撑腿的腘绳肌拉伸与臀肌收缩',
-   sets:'3组 × 10-12次/侧',
-   stretch:'站姿股四头拉伸'},
-  {id:'leg_3',muscle:'leg',name:'保加利亚分腿蹲',level:'高级',rpe:'RPE 8-9',
+   mindMuscle:'感受支撑腿的腘绳肌拉伸与臀肌收缩',sets:'3组 × 10-12次/侧',stretch:'站姿股四头拉伸'},
+  {id:'leg_3',muscle:'leg',name:'保加利亚分腿蹲',level:'高级',rpe:'RPE 8-9',gender:'both',
    details:['前腿胫骨垂直地面','后脚放在凳上仅作平衡','重心在前腿，躯干微前倾','前腿膝盖不超脚尖过多'],
-   sets:'3组 × 8-12次/侧',
-   stretch:'鸽式'},
-  {id:'leg_4',muscle:'leg',name:'罗马尼亚硬拉',level:'中级',rpe:'RPE 8-9',
+   sets:'3组 × 8-12次/侧',stretch:'鸽式'},
+  {id:'leg_4',muscle:'leg',name:'罗马尼亚硬拉',level:'中级',rpe:'RPE 8-9',gender:'both',
    details:['臀部后推启动，不是弯腰','杠铃紧贴腿部','膝盖微弯不锁死','到底部感受腘绳肌拉伸'],
-   mindMuscle:'想象用臀部"关门"站起',
-   sets:'3组 × 8-12次',
-   stretch:'站姿股四头拉伸'},
-  {id:'leg_5',muscle:'leg',name:'腿弯举',level:'新手',rpe:'RPE 8',
+   mindMuscle:'想象用臀部"关门"站起',sets:'3组 × 8-12次',stretch:'站姿股四头拉伸'},
+  {id:'leg_5',muscle:'leg',name:'腿弯举',level:'新手',rpe:'RPE 8',gender:'both',
    details:['髋部贴紧垫子不抬起','全程控制离心阶段','顶峰挤压腘绳肌','勾脚尖增加募集'],
-   sets:'3组 × 12-15次',
-   stretch:'站姿股四头拉伸'},
-  {id:'leg_6',muscle:'leg',name:'腿伸展',level:'新手',rpe:'RPE 8',
+   sets:'3组 × 12-15次',stretch:'站姿股四头拉伸'},
+  {id:'leg_6',muscle:'leg',name:'腿伸展',level:'新手',rpe:'RPE 8',gender:'both',
    details:['背部贴紧靠垫','顶峰时停留1-2秒挤压股四','离心时控制不要自由落体','勾脚尖增加股四募集'],
-   sets:'3组 × 12-15次',
-   stretch:'鸽式'},
-  {id:'leg_7',muscle:'leg',name:'臀推',level:'中级',rpe:'RPE 8-9',
-   details:['肩胛骨下缘靠在凳边','下巴收紧看膝盖方向','顶峰时臀部完全伸展','膝盖保持90°不变'],
-   mindMuscle:'顶峰时想象"骨盆向上顶穿天花板"',
-   sets:'3组 × 8-12次',
-   stretch:'鸽式'},
-  {id:'leg_8',muscle:'leg',name:'高脚杯深蹲',level:'新手',rpe:'RPE 7-8',
+   sets:'3组 × 12-15次',stretch:'鸽式'},
+  {id:'leg_7',muscle:'leg',name:'臀推',level:'中级',rpe:'RPE 8-9',gender:'both',
+   details:['肩胛骨下缘靠在凳边','下巴收紧看膝盖方向','顶峰时臀部完全伸展','膝盖保持90°不变','女性核心动作，臀大肌最大激活'],
+   mindMuscle:'顶峰时想象"骨盆向上顶穿天花板"',sets:'3组 × 8-12次',stretch:'鸽式'},
+  {id:'leg_8',muscle:'leg',name:'高脚杯深蹲',level:'新手',rpe:'RPE 7-8',gender:'both',
    details:['哑铃竖直抱在胸前','肘部触碰膝盖内侧','保持胸挺背直','下蹲深度：大腿平行或更低'],
-   sets:'3组 × 10-15次',
-   stretch:'站姿股四头拉伸'},
+   sets:'3组 × 10-15次',stretch:'站姿股四头拉伸'},
 
   // 核心
-  {id:'core_1',muscle:'core',name:'平板支撑',level:'新手',rpe:'RPE 7',
+  {id:'core_1',muscle:'core',name:'平板支撑',level:'新手',rpe:'RPE 7',gender:'both',
    details:['骨盆后倾+臀收紧（消除腰弓）','核心绷紧如腹部即将挨一拳','从头到脚一条直线','不憋气，平稳呼吸'],
-   mindMuscle:'想象肚脐向脊椎靠拢',
-   sets:'3组 × 30-60秒',
-   stretch:'婴儿式'},
-  {id:'core_2',muscle:'core',name:'悬垂举腿',level:'高级',rpe:'RPE 8-9',
+   mindMuscle:'想象肚脐向脊椎靠拢',sets:'3组 × 30-60秒',stretch:'婴儿式'},
+  {id:'core_2',muscle:'core',name:'悬垂举腿',level:'高级',rpe:'RPE 8-9',gender:'both',
    details:['控制下落不用惯性摆动','腿举至与地面平行或更高','骨盆在底部微后倾启动','不借力摆动'],
-   sets:'3组 × 8-15次',
-   stretch:'蛇式'},
-  {id:'core_3',muscle:'core',name:'死虫式',level:'新手',rpe:'RPE 7',
+   sets:'3组 × 8-15次',stretch:'蛇式'},
+  {id:'core_3',muscle:'core',name:'死虫式',level:'新手',rpe:'RPE 7',gender:'both',
    details:['腰部全程贴地不弓起','对侧手脚同时缓慢伸展','核心绷紧维持稳定','动作缓慢控制而非快速'],
-   sets:'3组 × 10次/侧',
-   stretch:'婴儿式'},
-  {id:'core_4',muscle:'core',name:'卷腹',level:'新手',rpe:'RPE 7-8',
+   sets:'3组 × 10次/侧',stretch:'婴儿式'},
+  {id:'core_4',muscle:'core',name:'卷腹',level:'新手',rpe:'RPE 7-8',gender:'both',
    details:['下巴与胸保持一拳距离','上背离开地面即可','腰部保持贴地','顶峰挤压腹肌1秒'],
-   sets:'3组 × 15-20次',
-   stretch:'蛇式'},
-  {id:'core_5',muscle:'core',name:'俄罗斯转体',level:'中级',rpe:'RPE 8',
+   sets:'3组 × 15-20次',stretch:'蛇式'},
+  {id:'core_5',muscle:'core',name:'俄罗斯转体',level:'中级',rpe:'RPE 8',gender:'both',
    details:['脚离地保持平衡','核心收紧旋转躯干','不只用肩膀转','控制节奏不快'],
-   sets:'3组 × 20次',
-   stretch:'婴儿式'},
-  {id:'core_6',muscle:'core',name:'侧平板',level:'中级',rpe:'RPE 7',
+   sets:'3组 × 20次',stretch:'婴儿式'},
+  {id:'core_6',muscle:'core',name:'侧平板',level:'中级',rpe:'RPE 7',gender:'both',
    details:['髋部不下沉，身体呈直线','核心和臀肌同时收紧','下方膝盖可落地降阶','保持平稳呼吸'],
-   sets:'3组 × 20-40秒/侧',
-   stretch:'蛇式'},
-  {id:'core_7',muscle:'core',name:'仰卧抬腿',level:'新手',rpe:'RPE 7-8',
+   sets:'3组 × 20-40秒/侧',stretch:'蛇式'},
+  {id:'core_7',muscle:'core',name:'仰卧抬腿',level:'新手',rpe:'RPE 7-8',gender:'both',
    details:['腰部贴地不弓起','腿缓慢下放但不触地','核心收紧控制','膝盖可微弯降低难度'],
-   sets:'3组 × 12-15次',
-   stretch:'婴儿式'},
-  {id:'core_8',muscle:'core',name:'农夫行走',level:'中级',rpe:'RPE 8',
+   sets:'3组 × 12-15次',stretch:'婴儿式'},
+  {id:'core_8',muscle:'core',name:'农夫行走',level:'中级',rpe:'RPE 8',gender:'both',
    details:['核心绷紧抗侧屈','挺胸不驼背','步幅稳定不高抬','双手重量相近'],
-   sets:'3组 × 30-40米',
-   stretch:'蛇式'},
+   sets:'3组 × 30-40米',stretch:'蛇式'},
+
+  // === 女生专用额外动作 ===
+  {id:'leg_9',muscle:'leg',name:'相扑硬拉',level:'中级',rpe:'RPE 8-9',gender:'female',
+   details:['宽站距（超过肩宽），脚尖外八','杠铃贴近小腿，背部中立','髋铰链启动，臀部发力站起','适配女性骨盆结构，强化臀+大腿内侧'],
+   mindMuscle:'想象用臀部"把地面推开"',sets:'3组 × 8-10次',stretch:'鸽式'},
+  {id:'leg_10',muscle:'leg',name:'哈克深蹲',level:'中级',rpe:'RPE 8-9',gender:'female',
+   details:['脚踩高位=臀主导，脚踩低位=腿主导','背部完全贴紧靠垫','下蹲至大腿平行或更低','膝盖与脚尖方向一致不内扣'],
+   mindMuscle:'蹬起时意念集中在臀大肌发力',sets:'3组 × 8-12次',stretch:'鸽式'},
+  {id:'leg_11',muscle:'leg',name:'坐姿髋外展',level:'新手',rpe:'RPE 7-8',gender:'female',
+   details:['身体紧贴靠背','双手扶把手','顶峰时停顿1-2秒','离心控制，不满速回放','臀中肌激活动作'],
+   sets:'3组 × 15-20次',stretch:'鸽式'},
+  {id:'leg_12',muscle:'leg',name:'弹力带螃蟹走',level:'新手',rpe:'RPE 7',gender:'female',
+   details:['弹力带套在膝盖上方','微蹲姿势，膝盖不要内扣','侧向小步移动，保持弹力带张力','臀部始终有酸胀感','女性臀中肌激活必备'],
+   sets:'3组 × 15步/侧',stretch:'站姿股四头拉伸'},
+  {id:'leg_13',muscle:'leg',name:'绳索后踢腿',level:'中级',rpe:'RPE 8',gender:'female',
+   details:['手扶固定物，身体微前倾','支撑腿微弯，核心收紧','绳索腿向后踢，顶峰挤压上臀','控制回放不借惯性','雕刻上臀线条'],
+   sets:'3组 × 12-15次/侧',stretch:'站姿股四头拉伸'},
+  {id:'leg_14',muscle:'leg',name:'芭蕾分腿蹲',level:'中级',rpe:'RPE 8-9',gender:'female',
+   details:['双脚宽于肩，脚尖外八','下蹲时膝盖沿脚尖方向打开','感受臀中肌和内收肌同时发力','扶墙辅助平衡','强化臀中肌+内收肌'],
+   sets:'3组 × 10-12次/侧',stretch:'鸽式'},
+  {id:'leg_15',muscle:'leg',name:'单腿臀桥',level:'新手',rpe:'RPE 7-8',gender:'female',
+   details:['仰卧，一腿抬起，另一腿支撑','臀部发力向上推起','顶峰挤压臀部1秒','缓慢下放但不触地','臀大肌孤立激活动作'],
+   sets:'3组 × 12-15次/侧',stretch:'鸽式'},
+  {id:'back_9',muscle:'back',name:'对握下拉（宽距）',level:'新手',rpe:'RPE 7-8',gender:'female',
+   details:['宽距对握/正握','启动先沉肩再下拉','拉到锁骨高度即可','身体微后仰但不借力','女性上肢入门动作'],
+   sets:'3组 × 10-12次',stretch:'悬挂拉伸'},
 ];
 
 const STRETCHES = {
@@ -610,60 +632,123 @@ const MUSCLE_GROUPS = [
 ];
 
 // ===========================
+// MOTIVATIONAL QUOTES
+// ===========================
+const QUOTES = [
+  '每一次训练，都是对未来的自己说"谢谢"',
+  '不是你变强了才去练，是你去练了才会变强',
+  '今天流的汗，明天都会变成光',
+  '肌肉不会说谎，你的努力它都记得',
+  '自律给我自由 —— 今天你又自由了一点',
+  '别小看每一天的坚持，一年后你会感谢现在的自己',
+  '身体是灵魂的花园，好好耕耘就会有花开',
+  '重量不会适应你，但你会适应重量',
+  '最好的训练，是今天的你比昨天的你多做了一次',
+  '疲劳只是暂时的，骄傲是永久的',
+  '每一滴汗都在雕刻未来的你',
+  '你比昨天更强了，无论重量还是信心',
+];
+
+// ===========================
+// STRENGTH STANDARDS (1RM / bodyweight)
+// ===========================
+const MALE_STANDARDS = {
+  bench:{beginner:0.6,intermediate:1.0},
+  squat:{beginner:0.75,intermediate:1.5},
+  deadlift:{beginner:1.0,intermediate:1.5},
+  pullup:{beginner:3,intermediate:8}, // max reps
+};
+const FEMALE_STANDARDS = {
+  bench:{beginner:0.4,intermediate:0.65},
+  squat:{beginner:0.55,intermediate:1.0},
+  deadlift:{beginner:0.7,intermediate:1.2},
+  pullup:{beginner:1,intermediate:3},
+};
+
+// ===========================
 // TRAINING PLANS
 // ===========================
 const PLANS = {
-  beginner: {
-    name:'新手二分化',
-    desc:'上肢 / 下肢+核心 循环',
-    frequency:'每周 3-4 次',
-    split:[
-      {name:'上肢日',exercises:['杠铃卧推','高位下拉','坐姿推肩','器械划船','杠铃弯举','绳索下压']},
-      {name:'下肢+核心日',exercises:['高脚杯深蹲','单腿硬拉','腿弯举','平板支撑','悬垂举腿']},
-    ]
+  male: {
+    beginner: {
+      name:'新手二分化',desc:'上肢 / 下肢+核心 循环',frequency:'每周 3-4 次',
+      split:[
+        {name:'上肢日',exercises:['杠铃卧推','高位下拉','坐姿推肩','器械划船','杠铃弯举','绳索下压']},
+        {name:'下肢+核心日',exercises:['高脚杯深蹲','单腿硬拉','腿弯举','平板支撑','悬垂举腿']},
+      ]
+    },
+    intermediate: {
+      name:'中级三分化',desc:'推 / 拉 / 腿 循环',frequency:'每周 5-6 次',
+      split:[
+        {name:'推日 · 胸+肩中束+三头',exercises:['杠铃卧推','哑铃上斜卧推','双杠臂屈伸','仰卧臂屈伸','Y字侧平举']},
+        {name:'拉日 · 背+二头',exercises:['单手钢线下拉','对握下拉','器械划船','杠铃划船','杠铃弯举']},
+        {name:'腿日 · 腿+核心',exercises:['单腿硬拉','保加利亚分腿蹲','颈前深蹲','罗马尼亚硬拉','悬垂举腿']},
+      ]
+    },
+    advanced: {
+      name:'高级三分化+',desc:'推 / 拉 / 腿 + 强度技巧',frequency:'每周 5-6 次',
+      split:[
+        {name:'推日 · 胸+肩+三头',exercises:['杠铃卧推','哑铃上斜卧推','双杠臂屈伸','哑铃飞鸟','哑铃推举','Y字侧平举','仰卧臂屈伸','绳索下压']},
+        {name:'拉日 · 背+二头',exercises:['引体向上','杠铃划船','单手钢线下拉','对握下拉','器械划船','绳索面拉','杠铃弯举','锤式弯举']},
+        {name:'腿日 · 腿+核心',exercises:['颈前深蹲','单腿硬拉','保加利亚分腿蹲','罗马尼亚硬拉','腿弯举','腿伸展','臀推','平板支撑']},
+      ]
+    }
   },
-  intermediate: {
-    name:'中级三分化',
-    desc:'推 / 拉 / 腿 循环',
-    frequency:'每周 5-6 次',
-    split:[
-      {name:'推日 · 胸+肩中束+三头',exercises:['杠铃卧推','哑铃上斜卧推','双杠臂屈伸','仰卧臂屈伸','Y字侧平举']},
-      {name:'拉日 · 背+二头',exercises:['单手钢线下拉','对握下拉','器械划船','杠铃划船','杠铃弯举']},
-      {name:'腿日 · 腿+核心',exercises:['单腿硬拉','保加利亚分腿蹲','颈前深蹲','罗马尼亚硬拉','悬垂举腿']},
-    ]
-  },
-  advanced: {
-    name:'高级三分化+',
-    desc:'推 / 拉 / 腿 + 强度技巧',
-    frequency:'每周 5-6 次',
-    split:[
-      {name:'推日 · 胸+肩+三头',exercises:['杠铃卧推','哑铃上斜卧推','双杠臂屈伸','哑铃飞鸟','哑铃推举','Y字侧平举','仰卧臂屈伸','绳索下压']},
-      {name:'拉日 · 背+二头',exercises:['引体向上','杠铃划船','单手钢线下拉','对握下拉','器械划船','绳索面拉','杠铃弯举','锤式弯举']},
-      {name:'腿日 · 腿+核心',exercises:['颈前深蹲','单腿硬拉','保加利亚分腿蹲','罗马尼亚硬拉','腿弯举','腿伸展','臀推','平板支撑']},
-    ]
+  female: {
+    beginner: {
+      name:'新手二分化',desc:'上肢 / 臀腿+核心 循环',frequency:'每周 3 次',
+      split:[
+        {name:'上肢日',exercises:['高位下拉','哑铃上斜卧推','哑铃单臂划船','坐姿推肩','绳索下压','平板支撑']},
+        {name:'臀腿+核心日',exercises:['臀推','高脚杯深蹲','单腿硬拉','坐姿髋外展','弹力带螃蟹走','单腿臀桥','死虫式']},
+      ]
+    },
+    intermediate: {
+      name:'中级三分化',desc:'推 / 拉 / 臀腿',frequency:'每周 4-5 次',
+      split:[
+        {name:'推日 · 胸+肩+三头',exercises:['哑铃上斜卧推','坐姿推肩','绳索夹胸','Y字侧平举','仰卧臂屈伸']},
+        {name:'拉日 · 背+二头',exercises:['高位下拉','器械划船','对握下拉（宽距）','绳索面拉','杠铃弯举']},
+        {name:'臀腿日 · 臀+腿',exercises:['臀推','相扑硬拉','保加利亚分腿蹲','哈克深蹲','腿弯举','绳索后踢腿']},
+      ]
+    },
+    advanced: {
+      name:'高级四分化',desc:'上身A / 腿A / 上身B / 腿B',frequency:'每周 5-6 次',
+      split:[
+        {name:'上身A · 推主导',exercises:['杠铃卧推','哑铃上斜卧推','哑铃推举','Y字侧平举','绳索下压','仰卧臂屈伸']},
+        {name:'腿A · 力量型',exercises:['颈前深蹲','相扑硬拉','臀推','保加利亚分腿蹲','腿弯举']},
+        {name:'上身B · 拉主导',exercises:['引体向上','杠铃划船','单手钢线下拉','对握下拉','绳索面拉','杠铃弯举']},
+        {name:'腿B · 塑形型',exercises:['哈克深蹲','罗马尼亚硬拉','芭蕾分腿蹲','坐姿髋外展','绳索后踢腿','单腿臀桥']},
+      ]
+    }
   }
 };
 
 // ===========================
 // APP STATE
 // ===========================
-const LS_KEY = 'strength_app';
+const LS_KEY = 'strength_app_v2';
 let state = loadState();
 let currentTab = 0;
 let currentMuscle = 'chest';
-let todayWorkout = null; // {dayIndex, exercises: [{name, sets:[{reps,weight,done}], rpeAdjust}]}
+let todayWorkout = null;
+let restTimerId = null;
 
 function defaultState(){
   return {
-    profile:{level:'',years:'',weight:'',height:'',name:''},
-    history:{}, // { 'YYYY-MM-DD': {exercises:[{name,sets:[{reps,weight}]}], feeling:'good'|'ok'|'tired', planDay:''} }
-    pr:{}, // { exerciseName: {weight:number, reps:number, date:''} }
+    profile:{gender:'male',years:'',weight:'',height:'',name:'',
+      bench:'',squat:'',deadlift:'',pullup:''},
+    history:{},
+    pr:{},
   };
 }
 function loadState(){
   try{
     const raw = localStorage.getItem(LS_KEY);
     if(raw){ const d=JSON.parse(raw); return {...defaultState(),...d}; }
+  }catch(e){}
+  // Migrate v1 data
+  try{
+    const old = localStorage.getItem('strength_app');
+    if(old){ const d=JSON.parse(old); return {...defaultState(),...d.profile?d:{profile:d.profile||defaultState().profile,history:d.history||{},pr:d.pr||{}}}; }
   }catch(e){}
   return defaultState();
 }
@@ -674,31 +759,76 @@ function saveState(){localStorage.setItem(LS_KEY, JSON.stringify(state))}
 // ===========================
 function $(sel){return document.querySelector(sel)}
 function $$(sel){return document.querySelectorAll(sel)}
-function fmt(s){return s}
 function todayStr(){return new Date().toISOString().slice(0,10)}
 function getExercise(name){return EXERCISES.find(e=>e.name===name)}
+function getGender(){return state.profile.gender||'male'}
+function getStandards(){return getGender()==='female'?FEMALE_STANDARDS:MALE_STANDARDS}
 
-function getLevel(years){
-  if(!years||years==='')return null;
-  const y=parseFloat(years);
-  if(y<1)return 'beginner';
-  if(y<=3)return 'intermediate';
+function getLevelFromStrength(){
+  const bw = parseFloat(state.profile.weight)||0;
+  if(!bw||bw<=0) return null;
+  const std = getStandards();
+  let bestLvl = 0; // 0=unknown,1=beginner,2=intermediate,3=advanced
+
+  function check(val, ratio, beginnerThresh, intermediateThresh){
+    if(val<=0||isNaN(val)) return 0;
+    const r = val/bw;
+    if(r>=intermediateThresh) return 3;
+    if(r>=beginnerThresh) return 2;
+    return 1;
+  }
+
+  // Bench: 1RM ≈ working weight × 1.2
+  const bench1rm = (parseFloat(state.profile.bench)||0)*1.2;
+  const benchLvl = check(bench1rm,0,std.bench.beginner,std.bench.intermediate);
+  bestLvl = Math.max(bestLvl,benchLvl);
+
+  const squat1rm = (parseFloat(state.profile.squat)||0)*1.2;
+  const squatLvl = check(squat1rm,0,std.squat.beginner,std.squat.intermediate);
+  bestLvl = Math.max(bestLvl,squatLvl);
+
+  const dl1rm = (parseFloat(state.profile.deadlift)||0)*1.2;
+  const dlLvl = check(dl1rm,0,std.deadlift.beginner,std.deadlift.intermediate);
+  bestLvl = Math.max(bestLvl,dlLvl);
+
+  // Pull-ups: max reps
+  const pu = parseInt(state.profile.pullup)||0;
+  if(pu>=std.pullup.intermediate) bestLvl = Math.max(bestLvl,3);
+  else if(pu>=std.pullup.beginner) bestLvl = Math.max(bestLvl,2);
+  else if(pu>0) bestLvl = Math.max(bestLvl,1);
+
+  if(bestLvl>=3) return 'advanced';
+  if(bestLvl>=2) return 'intermediate';
+  if(bestLvl>=1) return 'beginner';
+  return null;
+}
+
+function getLevel(){
+  const strengthLevel = getLevelFromStrength();
+  if(strengthLevel) return strengthLevel;
+
+  const years = parseFloat(state.profile.years)||0;
+  if(years<=0) return null;
+  if(years<1) return 'beginner';
+  if(years<=3) return 'intermediate';
   return 'advanced';
 }
+
 function getLevelLabel(lv){
-  if(lv==='beginner')return '新手';
-  if(lv==='intermediate')return '中级';
-  if(lv==='advanced')return '高级';
+  if(lv==='beginner') return '新手';
+  if(lv==='intermediate') return '中级';
+  if(lv==='advanced') return '高级';
   return '';
 }
 
 function getPlanDay(){
-  // Rotate through split days based on training history
-  const lv = getLevel(state.profile.years)||'beginner';
-  const plan = PLANS[lv];
+  const gender = getGender();
+  const lv = getLevel()||'beginner';
+  const plan = PLANS[gender][lv];
+  if(!plan) return 0;
   const history = Object.entries(state.history).sort((a,b)=>b[0].localeCompare(a[0]));
   if(history.length===0) return 0;
-  const lastDay = parseInt(history[0][1].planDay) || 0;
+  const lastDay = parseInt(history[0][1].planDay)||0;
   return (lastDay + 1) % plan.split.length;
 }
 
@@ -710,33 +840,30 @@ function renderWorkout(){
   const today = todayStr();
   $('#today-date').textContent = today;
 
-  const lv = getLevel(state.profile.years);
+  const lv = getLevel();
   if(!lv){
     container.innerHTML = `
       <div class="empty-state fade-in-up">
         <div class="icon">🏋️</div>
         <p>请先完善个人资料</p>
-        <p style="font-size:13px;color:var(--text2)">在「我的」页面填写训练年限等信息<br/>系统将自动匹配训练计划</p>
+        <p style="font-size:13px;color:var(--text2)">在「我的」页面填写体重和力量数据<br/>系统将自动评估等级并匹配计划</p>
         <button class="btn btn-primary" style="margin-top:16px" onclick="switchTab(4)">去填写资料</button>
       </div>`;
     return;
   }
 
-  const plan = PLANS[lv];
+  const gender = getGender();
+  const plan = PLANS[gender][lv];
+  if(!plan){container.innerHTML='<div class="empty-state"><p>暂无比等级的计划</p></div>';return;}
   const dayIndex = getPlanDay();
   const planDay = plan.split[dayIndex];
-
-  // Check if today already has a workout
   const todayLog = state.history[today];
 
   if(todayLog){
-    // Show completed workout
     renderCompletedWorkout(container, todayLog, planDay);
   }else if(todayWorkout && todayWorkout.dayIndex===dayIndex){
-    // Show in-progress workout
     renderActiveWorkout(container, planDay);
   }else{
-    // Show pre-workout screen
     renderPreWorkout(container, plan, planDay, dayIndex);
   }
 }
@@ -748,24 +875,25 @@ function renderPreWorkout(container, plan, planDay, dayIndex){
         <div style="font-size:40px;margin-bottom:12px">🔥</div>
         <div style="font-size:18px;font-weight:700">${planDay.name}</div>
         <div style="font-size:13px;color:var(--text2);margin-top:4px">${plan.name} · ${plan.frequency}</div>
+        ${getGender()==='female'?'<span class="ex-tag gender" style="margin-top:4px;display:inline-block">👩 女生专属</span>':''}
       </div>
-
+      <div class="warmup-card">
+        <strong>🔥 训练前热身（3-5分钟）</strong><br>
+        肩部环绕 30s · 髋部环绕 30s · 自重深蹲 ×10 · 猫牛式 ×8 · 弹力带肩部激活
+      </div>
       <div class="card">
         <div class="card-header">今日动作预览</div>
         ${planDay.exercises.map((name,i)=>{
           const ex = getExercise(name);
           if(!ex) return '';
-          return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid rgba(255,255,255,0.04)">
+          return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)">
             <span style="color:var(--text2);font-size:13px;width:20px">${i+1}</span>
             <span style="font-size:14px;font-weight:500">${name}</span>
             <span style="margin-left:auto;font-size:11px;color:var(--text2)">${ex.sets}</span>
           </div>`;
         }).join('')}
       </div>
-
-      <button class="btn btn-primary" onclick="startWorkoutPreCheck(${dayIndex})" style="margin-top:12px">
-        开始训练
-      </button>
+      <button class="btn btn-primary" onclick="startWorkoutPreCheck(${dayIndex})" style="margin-top:12px">开始训练</button>
     </div>`;
 }
 
@@ -784,9 +912,10 @@ function renderActiveWorkout(container, planDay){
         if(!exData) return '';
         const doneCount = ex.sets.filter(s=>s.done).length;
         const totalSets = ex.sets.length;
+        const muscleCls = exData.muscle||'chest';
         return `
-        <div class="card ex-card" id="ex-card-${i}" style="${doneCount===totalSets?'opacity:0.6':''}">
-          <div style="display:flex;justify-content:space-between;align-items:center" onclick="scrollToSets(${i})">
+        <div class="card ${muscleCls}" id="ex-card-${i}" style="${doneCount===totalSets?'opacity:0.5':''}">
+          <div style="display:flex;justify-content:space-between;align-items:center">
             <div>
               <div class="ex-name">${ex.name} ${doneCount===totalSets?'✅':''}</div>
               <div class="ex-tags" style="margin-top:4px">
@@ -803,9 +932,7 @@ function renderActiveWorkout(container, planDay){
                 <label>组${si+1}</label>
                 <input class="set-input" type="number" placeholder="重量kg" value="${s.weight||''}" onchange="updateSet(${i},${si},'weight',this.value)" style="width:60px">
                 <input class="set-input" type="number" placeholder="次数" value="${s.reps||''}" onchange="updateSet(${i},${si},'reps',this.value)" style="width:55px">
-                <button class="set-done-btn ${s.done?'done':''}" id="done-btn-${i}-${si}" onclick="toggleSetDone(${i},${si})">
-                  ✓
-                </button>
+                <button class="set-done-btn ${s.done?'done':''}" id="done-btn-${i}-${si}" onclick="toggleSetDone(${i},${si})">✓</button>
               </div>
             `).join('')}
           </div>
@@ -816,7 +943,6 @@ function renderActiveWorkout(container, planDay){
           </div>
         </div>`;
       }).join('')}
-
       <button class="btn ${allDone?'btn-primary':'btn-secondary'}" onclick="finishWorkout()" style="margin-top:8px">
         ${allDone?'完成训练 🎉':'跳过剩余 → 拉伸'}
       </button>
@@ -830,19 +956,13 @@ function renderCompletedWorkout(container, todayLog, planDay){
         <div style="font-size:48px;margin-bottom:8px">✅</div>
         <div style="font-size:18px;font-weight:700">今日训练完成</div>
         <div style="font-size:14px;color:var(--text2);margin-top:4px">${planDay.name} · 状态: ${feelingLabel(todayLog.feeling)}</div>
+        ${todayLog.note?`<div style="font-size:12px;color:var(--blue);margin-top:8px;font-style:italic">📝 ${todayLog.note}</div>`:''}
       </div>
       ${todayLog.exercises.map(ex=>{
         const exData = getExercise(ex.name);
         const setsDone = ex.sets.filter(s=>s.done);
-        return `
-        <div class="card">
-          <div class="ex-name">${ex.name}</div>
-          <div style="font-size:12px;color:var(--text2);margin-top:4px">
-            ${setsDone.map(s=>`${s.weight||0}kg × ${s.reps||0}次`).join(' | ')}
-          </div>
-        </div>`;
+        return `<div class="card"><div class="ex-name">${ex.name}</div><div style="font-size:12px;color:var(--text2);margin-top:4px">${setsDone.map(s=>`${s.weight||0}kg × ${s.reps||0}次`).join(' | ')}</div></div>`;
       }).join('')}
-
       <div class="card" style="margin-top:8px">
         <div class="card-header">🧘 拉伸放松</div>
         <div class="card-sub">基于今日训练部位的拉伸动作</div>
@@ -850,7 +970,6 @@ function renderCompletedWorkout(container, todayLog, planDay){
       </div>
     </div>`;
 
-  // Render stretches for today's exercises
   setTimeout(()=>{
     const stretchSet = new Set();
     todayLog.exercises.forEach(ex=>{
@@ -862,11 +981,7 @@ function renderCompletedWorkout(container, todayLog, planDay){
       list.innerHTML = [...stretchSet].map(sName=>{
         const s = STRETCHES[sName];
         if(!s) return '';
-        return `<div class="card" style="background:rgba(255,255,255,0.03);padding:12px;margin-top:8px">
-          <div style="font-weight:600;font-size:14px">${s.name}</div>
-          <div style="font-size:12px;color:var(--text2);margin-top:4px">${s.steps}</div>
-          <div style="font-size:11px;color:var(--blue);margin-top:4px">🌬 ${s.breath}</div>
-        </div>`;
+        return `<div class="card" style="background:rgba(0,0,0,0.02);padding:12px;margin-top:8px"><div style="font-weight:600;font-size:14px">${s.name}</div><div style="font-size:12px;color:var(--text2);margin-top:4px">${s.steps}</div><div style="font-size:11px;color:var(--green);margin-top:4px">🌬 ${s.breath}</div></div>`;
       }).join('');
     }
   },100);
@@ -888,24 +1003,18 @@ function startWorkoutPreCheck(dayIndex){
   card.innerHTML = `
     <h3>今天感觉怎么样？</h3>
     <p style="color:var(--text2);font-size:14px">根据状态自动调整训练强度</p>
-    <button class="assess-option" onclick="startWorkout(${dayIndex},'good')">
-      <span class="emoji">🔥</span>很有劲！全力以赴
-    </button>
-    <button class="assess-option" onclick="startWorkout(${dayIndex},'ok')">
-      <span class="emoji">🙂</span>还行，正常训练
-    </button>
-    <button class="assess-option" onclick="startWorkout(${dayIndex},'tired')">
-      <span class="emoji">😮‍💨</span>有点累，轻松一点
-    </button>
+    <button class="assess-option" onclick="startWorkout(${dayIndex},'good')"><span class="emoji">🔥</span>很有劲！全力以赴</button>
+    <button class="assess-option" onclick="startWorkout(${dayIndex},'ok')"><span class="emoji">🙂</span>还行，正常训练</button>
+    <button class="assess-option" onclick="startWorkout(${dayIndex},'tired')"><span class="emoji">😮‍💨</span>有点累，轻松一点</button>
   `;
   overlay.classList.add('open');
 }
 
 function startWorkout(dayIndex, feeling){
   $('#assess-overlay').classList.remove('open');
-
-  const lv = getLevel(state.profile.years)||'beginner';
-  const plan = PLANS[lv];
+  const gender = getGender();
+  const lv = getLevel()||'beginner';
+  const plan = PLANS[gender][lv];
   const planDay = plan.split[dayIndex];
 
   const exercises = planDay.exercises.map(name=>{
@@ -915,59 +1024,63 @@ function startWorkout(dayIndex, feeling){
       const m = exData.sets.match(/(\d+)组/);
       if(m) numSets = parseInt(m[1]);
     }
-    // Adjust for tiredness
     if(feeling==='tired') numSets = Math.max(2, numSets - 1);
-
     const sets = [];
-    for(let i=0;i<numSets;i++){
-      sets.push({reps:'',weight:'',done:false});
-    }
+    for(let i=0;i<numSets;i++) sets.push({reps:'',weight:'',done:false});
     return {name, sets, rpeAdjust:null};
   });
 
   todayWorkout = {dayIndex, exercises, feeling};
-  const planDay2 = PLANS[getLevel(state.profile.years)||'beginner'].split[dayIndex];
   renderWorkout();
   showToast('训练开始！加油 🔥');
 }
 
-function updateSet(exI, setI, field, value){
-  todayWorkout.exercises[exI].sets[setI][field] = value;
-}
+function updateSet(exI, setI, field, value){todayWorkout.exercises[exI].sets[setI][field] = value}
 function toggleSetDone(exI, setI){
   const s = todayWorkout.exercises[exI].sets[setI];
   s.done = !s.done;
   const btn = $(`#done-btn-${exI}-${setI}`);
   if(btn){
     btn.classList.toggle('done', s.done);
-    if(s.done) btn.classList.add('check-pop');
+    if(s.done){
+      btn.classList.add('check-pop');
+      startRestTimer(exI);
+    }
   }
-  // Check if all sets done for this exercise -> update card opacity
   const ex = todayWorkout.exercises[exI];
   const allDone = ex.sets.every(s=>s.done);
   const card = $(`#ex-card-${exI}`);
-  if(card) card.style.opacity = allDone ? '0.6' : '';
-
-  // Check if entire workout done
+  if(card) card.style.opacity = allDone ? '0.5' : '';
   const allWorkoutDone = todayWorkout.exercises.every(ex=>ex.sets.every(s=>s.done));
-  if(allWorkoutDone){
-    showToast('全部动作完成！去做拉伸吧 🧘');
-  }
+  if(allWorkoutDone) showToast('全部动作完成！去做拉伸吧 🧘');
 }
-function adjustRPE(exI, level){
-  todayWorkout.exercises[exI].rpeAdjust = level;
-  renderWorkout();
+
+function startRestTimer(exI){
+  const exData = getExercise(todayWorkout.exercises[exI].name);
+  const isHeavy = exData && (exData.rpe.includes('8-9')||exData.rpe.includes('9'));
+  let sec = isHeavy ? 90 : 60;
+  const timer = $('#rest-timer');
+  const secEl = $('#rest-sec');
+  secEl.textContent = sec;
+  timer.classList.add('show');
+  clearInterval(restTimerId);
+  restTimerId = setInterval(()=>{
+    sec--;
+    secEl.textContent = sec;
+    if(sec<=0){
+      clearInterval(restTimerId);
+      timer.classList.remove('show');
+      if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    }
+  },1000);
+  setTimeout(()=>{if(timer.classList.contains('show')){clearInterval(restTimerId);timer.classList.remove('show');}},isHeavy?95000:65000);
 }
-function scrollToSets(exI){
-  const el = $(`#set-${exI}-0`);
-  if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
-}
+
+function adjustRPE(exI, level){todayWorkout.exercises[exI].rpeAdjust = level; renderWorkout()}
 
 function finishWorkout(){
   if(!todayWorkout) return;
   const today = todayStr();
-
-  // Save to history
   state.history[today] = {
     exercises: todayWorkout.exercises.map(ex=>({
       name:ex.name,
@@ -975,24 +1088,44 @@ function finishWorkout(){
     })).filter(ex=>ex.sets.length>0),
     feeling: todayWorkout.feeling,
     planDay: todayWorkout.dayIndex,
+    note: '',
   };
-
-  // Update PRs
   todayWorkout.exercises.forEach(ex=>{
     ex.sets.filter(s=>s.done).forEach(s=>{
       const w = parseFloat(s.weight)||0;
       const r = parseInt(s.reps)||0;
       const currentPR = state.pr[ex.name];
-      if(!currentPR || w > currentPR.weight || (w===currentPR.weight && r > currentPR.reps)){
+      if(!currentPR || w>currentPR.weight || (w===currentPR.weight && r>currentPR.reps)){
         state.pr[ex.name] = {weight:w, reps:r, date:today};
       }
     });
   });
-
   saveState();
   todayWorkout = null;
   renderWorkout();
-  showToast('训练已保存！💪');
+  showMotivation();
+}
+
+function showMotivation(){
+  const q = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  const overlay = $('#quote-overlay');
+  const card = $('#quote-card');
+  card.innerHTML = `
+    <div class="q-emoji bounce-in">💪</div>
+    <div class="q-text">${q}</div>
+    <div style="margin-bottom:12px">
+      <label class="form-label">训练日记（可选）</label>
+      <input class="form-input" id="diary-note" placeholder="今天有什么想记下的？">
+    </div>
+    <button class="q-close" onclick="closeQuote()">完成 🎉</button>
+  `;
+  overlay.classList.add('open');
+}
+function closeQuote(){
+  const note = $('#diary-note')?.value||'';
+  const today = todayStr();
+  if(note && state.history[today]){state.history[today].note = note; saveState(); renderWorkout();}
+  $('#quote-overlay').classList.remove('open');
 }
 
 // ===========================
@@ -1001,36 +1134,23 @@ function finishWorkout(){
 function renderMusclePills(){
   const container = $('#muscle-pills');
   container.innerHTML = MUSCLE_GROUPS.map(g=>`
-    <button class="muscle-pill ${g.id===currentMuscle?'active':''}" onclick="selectMuscle('${g.id}')">
-      <span style="font-size:20px">${g.emoji}</span>
-    </button>
+    <button class="muscle-pill ${g.id} ${g.id===currentMuscle?'active':''}" onclick="selectMuscle('${g.id}')">${g.emoji}</button>
   `).join('');
-  // Also add the names below pills
-  const nameRow = document.createElement('div');
-  nameRow.style.cssText = 'display:flex;gap:8px;overflow-x:auto;padding:0 0 8px;scrollbar-width:none;font-size:11px;color:var(--text2)';
-  nameRow.innerHTML = MUSCLE_GROUPS.map(g=>`
-    <span style="flex-shrink:0;width:56px;text-align:center">${g.name}</span>
-  `).join('');
-  container.parentNode.insertBefore(nameRow, container.nextSibling);
 }
-
-function selectMuscle(id){
-  currentMuscle = id;
-  renderMusclePills();
-  renderExerciseList();
-}
-
+function selectMuscle(id){currentMuscle=id;renderMusclePills();renderExerciseList()}
 function renderExerciseList(){
   const container = $('#exercise-list');
-  const exercises = EXERCISES.filter(e=>e.muscle===currentMuscle);
+  const gender = getGender();
+  const exercises = EXERCISES.filter(e=>e.muscle===currentMuscle && (e.gender==='both'||e.gender===gender));
   container.innerHTML = exercises.map((ex,i)=>`
-    <div class="card ex-card fade-in-up" style="animation-delay:${i*0.05}s" onclick="openDetail('${ex.id}')">
+    <div class="card ex-card ${ex.muscle} fade-in-up" style="animation-delay:${i*0.05}s" onclick="openDetail('${ex.id}')">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
           <div class="ex-name">${ex.name}</div>
           <div class="ex-tags">
             <span class="ex-tag level">${ex.level}</span>
             <span class="ex-tag rpe">${ex.rpe}</span>
+            ${ex.gender==='female'?'<span class="ex-tag gender">👩 女生</span>':''}
             ${state.pr[ex.name]?`<span class="pr-badge">🏆 PR ${state.pr[ex.name].weight}kg×${state.pr[ex.name].reps}</span>`:''}
           </div>
         </div>
@@ -1044,160 +1164,75 @@ function openDetail(id){
   const ex = EXERCISES.find(e=>e.id===id);
   if(!ex) return;
   const s = STRETCHES[ex.stretch];
+  const biliUrl = `https://search.bilibili.com/all?keyword=${encodeURIComponent(ex.name)}+${encodeURIComponent('教学')}`;
   const panel = $('#detail-panel');
   panel.innerHTML = `
     <div class="detail-handle"></div>
     <div class="detail-title">${ex.name}</div>
     <div class="ex-tags" style="margin-bottom:12px">
-      <span class="ex-tag level">${ex.level}</span>
-      <span class="ex-tag rpe">${ex.rpe}</span>
+      <span class="ex-tag level">${ex.level}</span><span class="ex-tag rpe">${ex.rpe}</span>
+      ${ex.gender==='female'?'<span class="ex-tag gender">👩 女生</span>':''}
     </div>
-    <div class="detail-section">
-      <h4>🔴 关键细节</h4>
-      ${ex.details.map(d=>`<div class="detail-tip"><span class="dot">•</span><span>${d}</span></div>`).join('')}
-    </div>
-    ${ex.mindMuscle?`
-    <div class="detail-section">
-      <h4>🧠 意念-肌肉连接</h4>
-      <div class="card-sub">${ex.mindMuscle}</div>
-    </div>`:''}
-    <div class="detail-section">
-      <h4>📊 组次建议</h4>
-      <div class="card-sub">${ex.sets}</div>
-    </div>
-    ${s?`
-    <div class="detail-section">
-      <h4>🧘 对应拉伸: ${ex.stretch}</h4>
-      <div class="card" style="background:rgba(255,255,255,0.03);padding:12px">
-        <div style="font-size:13px;line-height:1.6">${s.steps}</div>
-        <div style="font-size:12px;color:var(--blue);margin-top:6px">🌬 ${s.breath}</div>
-      </div>
-    </div>`:''}
-    ${state.pr[ex.name]?`
-    <div class="detail-section">
-      <h4>🏆 个人记录</h4>
-      <div class="card-sub"><span class="pr-badge">${state.pr[ex.name].weight}kg × ${state.pr[ex.name].reps} 次</span> ${state.pr[ex.name].date}</div>
-    </div>`:''}
+    <div class="detail-section"><h4>🔴 关键细节</h4>${ex.details.map(d=>`<div class="detail-tip"><span class="dot">•</span><span>${d}</span></div>`).join('')}</div>
+    ${ex.mindMuscle?`<div class="detail-section"><h4>🧠 意念-肌肉连接</h4><div class="card-sub">${ex.mindMuscle}</div></div>`:''}
+    <div class="detail-section"><h4>📊 组次建议</h4><div class="card-sub">${ex.sets}</div></div>
+    ${s?`<div class="detail-section"><h4>🧘 对应拉伸: ${ex.stretch}</h4><div class="card" style="background:rgba(0,0,0,0.02);padding:12px"><div style="font-size:13px;line-height:1.6">${s.steps}</div><div style="font-size:12px;color:var(--green);margin-top:6px">🌬 ${s.breath}</div></div></div>`:''}
+    ${state.pr[ex.name]?`<div class="detail-section"><h4>🏆 个人记录</h4><div class="card-sub"><span class="pr-badge">${state.pr[ex.name].weight}kg × ${state.pr[ex.name].reps} 次</span> ${state.pr[ex.name].date}</div></div>`:''}
+    <a href="${biliUrl}" target="_blank" class="video-link">📺 查看教学视频 → Bilibili</a>
   `;
   $('#detail-overlay').classList.add('open');
   panel.classList.add('open');
 }
-
 function closeDetail(){
   $('#detail-overlay').classList.remove('open');
   $('#detail-panel').classList.remove('open');
 }
 
 // ===========================
-// RENDER: Tab 2 — 训练记录
+// RENDER: Tab 2 — 记录
 // ===========================
 function renderLog(){
   const container = $('#log-content');
   const today = todayStr();
   const todayLog = state.history[today];
-
   if(!todayLog || !todayLog.exercises.length){
-    container.innerHTML = `
-      <div class="empty-state fade-in-up">
-        <div class="icon">📝</div>
-        <p>今天还没有训练记录</p>
-        <p style="font-size:13px;color:var(--text2)">去「今日训练」开始吧</p>
-        <button class="btn btn-primary" style="margin-top:12px" onclick="switchTab(0)">去训练</button>
-      </div>
-      <div class="card">
-        <div class="card-header">快速添加记录</div>
-        <div class="card-sub" style="margin-bottom:12px">手动记录某个动作</div>
-        <div id="quick-log-form"></div>
-      </div>`;
+    container.innerHTML = `<div class="empty-state fade-in-up"><div class="icon">📝</div><p>今天还没有训练记录</p><p style="font-size:13px;color:var(--text2)">去「今日训练」开始吧</p><button class="btn btn-primary" style="margin-top:12px" onclick="switchTab(0)">去训练</button></div>
+    <div class="card"><div class="card-header">快速添加记录</div><div class="card-sub" style="margin-bottom:12px">手动记录某个动作</div><div id="quick-log-form"></div></div>`;
     renderQuickLog();
   }else{
-    container.innerHTML = `
-      <div class="fade-in-up">
-        <div class="card">
-          <div style="font-size:16px;font-weight:700">今日训练摘要</div>
-          <div style="font-size:13px;color:var(--text2);margin-top:4px">状态: ${feelingLabel(todayLog.feeling)}</div>
-        </div>
-        ${todayLog.exercises.map(ex=>{
-          const exData = getExercise(ex.name);
-          return `
-          <div class="card">
-            <div class="ex-name">${ex.name}</div>
-            <div class="ex-tags" style="margin-top:4px">
-              ${exData?`<span class="ex-tag level">${exData.level}</span>`:''}
-            </div>
-            <div style="font-size:13px;color:var(--text2);margin-top:8px">
-              ${ex.sets.map((s,i)=>`组${i+1}: ${s.weight}kg × ${s.reps}次`).join('<br>')}
-            </div>
-          </div>`;
-        }).join('')}
-      </div>`;
+    container.innerHTML = `<div class="fade-in-up"><div class="card"><div style="font-size:16px;font-weight:700">今日训练摘要</div><div style="font-size:13px;color:var(--text2);margin-top:4px">状态: ${feelingLabel(todayLog.feeling)}</div></div>${todayLog.exercises.map(ex=>{const exData=getExercise(ex.name);return`<div class="card"><div class="ex-name">${ex.name}</div><div class="ex-tags" style="margin-top:4px">${exData?`<span class="ex-tag level">${exData.level}</span>`:''}</div><div style="font-size:13px;color:var(--text2);margin-top:8px">${ex.sets.map((s,i)=>`组${i+1}: ${s.weight}kg × ${s.reps}次`).join('<br>')}</div></div>`;}).join('')}</div>`;
   }
 }
-
 function renderQuickLog(){
   const form = $('#quick-log-form');
   const allNames = [...new Set(EXERCISES.map(e=>e.name))].sort();
-  form.innerHTML = `
-    <select class="form-input" id="ql-muscle" onchange="updateQLExercises()">
-      <option value="">选择肌群</option>
-      ${MUSCLE_GROUPS.map(g=>`<option value="${g.id}">${g.emoji} ${g.name}</option>`).join('')}
-    </select>
-    <select class="form-input" id="ql-exercise">
-      <option value="">选择动作</option>
-      ${allNames.map(n=>`<option value="${n}">${n}</option>`).join('')}
-    </select>
-    <div id="ql-sets" style="margin-bottom:8px"></div>
-    <button class="btn btn-sm btn-secondary" onclick="addQLSet()">+ 添加组</button>
-    <button class="btn btn-primary" style="margin-top:8px" onclick="saveQuickLog()">保存记录</button>
-  `;
+  form.innerHTML = `<select class="form-input" id="ql-muscle" onchange="updateQLExercises()"><option value="">选择肌群</option>${MUSCLE_GROUPS.map(g=>`<option value="${g.id}">${g.emoji} ${g.name}</option>`).join('')}</select><select class="form-input" id="ql-exercise"><option value="">选择动作</option>${allNames.map(n=>`<option value="${n}">${n}</option>`).join('')}</select><div id="ql-sets" style="margin-bottom:8px"></div><button class="btn btn-sm btn-secondary" onclick="addQLSet()">+ 添加组</button><button class="btn btn-primary" style="margin-top:8px" onclick="saveQuickLog()">保存记录</button>`;
   addQLSet();
 }
 function updateQLExercises(){
-  const muscle = $('#ql-muscle').value;
-  const sel = $('#ql-exercise');
-  const exs = muscle ? EXERCISES.filter(e=>e.muscle===muscle) : EXERCISES;
-  sel.innerHTML = '<option value="">选择动作</option>' + exs.map(e=>`<option value="${e.name}">${e.name}</option>`).join('');
+  const muscle=$('#ql-muscle').value;
+  const sel=$('#ql-exercise');
+  const exs=muscle?EXERCISES.filter(e=>e.muscle===muscle):EXERCISES;
+  sel.innerHTML='<option value="">选择动作</option>'+exs.map(e=>`<option value="${e.name}">${e.name}</option>`).join('');
 }
 function addQLSet(){
-  const container = $('#ql-sets');
-  const idx = container.children.length;
-  const div = document.createElement('div');
-  div.className = 'set-group';
-  div.innerHTML = `
-    <label>组${idx+1}</label>
-    <input class="set-input ql-weight" type="number" placeholder="重量kg" style="width:65px">
-    <input class="set-input ql-reps" type="number" placeholder="次数" style="width:55px">
-  `;
+  const container=$('#ql-sets');
+  const idx=container.children.length;
+  const div=document.createElement('div');div.className='set-group';
+  div.innerHTML=`<label>组${idx+1}</label><input class="set-input ql-weight" type="number" placeholder="重量kg" style="width:65px"><input class="set-input ql-reps" type="number" placeholder="次数" style="width:55px">`;
   container.appendChild(div);
 }
 function saveQuickLog(){
-  const name = $('#ql-exercise').value;
+  const name=$('#ql-exercise').value;
   if(!name){showToast('请选择动作');return;}
-  const weights = $$('#ql-sets .ql-weight');
-  const reps = $$('#ql-sets .ql-reps');
-  const sets = [];
-  for(let i=0;i<weights.length;i++){
-    const w = parseFloat(weights[i].value);
-    const r = parseInt(reps[i].value);
-    if(w>0&&r>0) sets.push({weight:w,reps:r,done:true});
-  }
+  const weights=$$('#ql-sets .ql-weight'),reps=$$('#ql-sets .ql-reps'),sets=[];
+  for(let i=0;i<weights.length;i++){const w=parseFloat(weights[i].value),r=parseInt(reps[i].value);if(w>0&&r>0)sets.push({weight:w,reps:r,done:true});}
   if(sets.length===0){showToast('请至少填写一组');return;}
-
-  const today = todayStr();
-  if(!state.history[today]) state.history[today] = {exercises:[],feeling:'ok',planDay:''};
+  const today=todayStr();
+  if(!state.history[today])state.history[today]={exercises:[],feeling:'ok',planDay:''};
   state.history[today].exercises.push({name,sets});
-
-  // Update PR
-  sets.forEach(s=>{
-    const cp = state.pr[name];
-    if(!cp||s.weight>cp.weight||(s.weight===cp.weight&&s.reps>cp.reps)){
-      state.pr[name] = {weight:s.weight, reps:s.reps, date:today};
-    }
-  });
-
-  saveState();
-  renderLog();
-  showToast('记录已保存 ✅');
+  sets.forEach(s=>{const cp=state.pr[name];if(!cp||s.weight>cp.weight||(s.weight===cp.weight&&s.reps>cp.reps))state.pr[name]={weight:s.weight,reps:s.reps,date:today};});
+  saveState();renderLog();showToast('记录已保存 ✅');
 }
 
 // ===========================
@@ -1206,73 +1241,33 @@ function saveQuickLog(){
 function renderHistory(){
   const container = $('#history-content');
   const entries = Object.entries(state.history).sort((a,b)=>b[0].localeCompare(a[0]));
-
   if(entries.length===0){
-    container.innerHTML = `
-      <div class="empty-state fade-in-up">
-        <div class="icon">📅</div>
-        <p>还没有训练记录</p>
-        <p style="font-size:13px;color:var(--text2)">完成训练后这里会出现历史记录</p>
-      </div>`;
+    container.innerHTML = `<div class="empty-state fade-in-up"><div class="icon">📅</div><p>还没有训练记录</p><p style="font-size:13px;color:var(--text2)">完成训练后这里会出现历史记录</p></div>`;
     return;
   }
-
-  // Calendar heatmap for current month
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const firstDow = new Date(year, month, 0).getDay();
-
-  let calHTML = '<div class="card"><div class="card-header">本月训练热力图</div><div class="cal-grid">';
-  // Offset for first day
-  for(let i=0;i<firstDow;i++) calHTML += '<div class="cal-cell" style="background:transparent"></div>';
+  const year=now.getFullYear(),month=now.getMonth();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const firstDow=new Date(year,month,0).getDay();
+  let calHTML='<div class="card"><div class="card-header">本月训练热力图</div><div class="cal-grid">';
+  for(let i=0;i<firstDow;i++)calHTML+='<div class="cal-cell" style="background:transparent"></div>';
   for(let d=1;d<=daysInMonth;d++){
-    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const entry = state.history[ds];
-    let cls = 'cal-cell';
-    if(entry){
-      const count = entry.exercises.length;
-      if(count>=6) cls+=' trained-3';
-      else if(count>=4) cls+=' trained-2';
-      else cls+=' trained';
-    }
-    calHTML += `<div class="${cls}" title="${ds}"></div>`;
+    const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const entry=state.history[ds];
+    let cls='cal-cell';
+    if(entry){const count=entry.exercises.length;if(count>=6)cls+=' trained-3';else if(count>=4)cls+=' trained-2';else cls+=' trained';}
+    calHTML+=`<div class="${cls}" title="${ds}"></div>`;
   }
-  calHTML += '</div></div>';
-
-  // History list
-  let listHTML = '<div style="margin-top:12px">';
+  calHTML+='</div></div>';
+  let listHTML='<div style="margin-top:12px">';
   entries.forEach(([date,entry])=>{
-    listHTML += `
-    <div class="card workout-day">
-      <h4>${date} · ${feelingLabel(entry.feeling)}</h4>
-      ${entry.exercises.map(ex=>`
-        <div style="font-size:13px;padding:4px 0;border-bottom:0.5px solid rgba(255,255,255,0.03)">
-          <span style="font-weight:500">${ex.name}</span>
-          <span style="color:var(--text2);margin-left:8px">${ex.sets.map(s=>`${s.weight}kg×${s.reps}`).join(' | ')}</span>
-        </div>
-      `).join('')}
-    </div>`;
+    listHTML+=`<div class="card workout-day"><h4>${date} · ${feelingLabel(entry.feeling)}</h4>${entry.exercises.map(ex=>`<div style="font-size:13px;padding:4px 0;border-bottom:0.5px solid rgba(0,0,0,0.03)"><span style="font-weight:500">${ex.name}</span><span style="color:var(--text2);margin-left:8px">${ex.sets.map(s=>`${s.weight}kg×${s.reps}`).join(' | ')}</span></div>`).join('')}${entry.note?`<div style="font-size:11px;color:var(--blue);margin-top:4px;font-style:italic">📝 ${entry.note}</div>`:''}</div>`;
   });
-  listHTML += '</div>';
-
-  // PR section
-  const prEntries = Object.entries(state.pr).sort((a,b)=>a[0].localeCompare(b[0]));
+  listHTML+='</div>';
+  const prEntries=Object.entries(state.pr).sort((a,b)=>a[0].localeCompare(b[0]));
   if(prEntries.length>0){
-    listHTML += `
-    <div class="card" style="margin-top:12px">
-      <div class="card-header">🏆 个人最佳记录</div>
-      ${prEntries.map(([name,pr])=>`
-        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:0.5px solid rgba(255,255,255,0.03)">
-          <span>${name}</span>
-          <span class="pr-badge">${pr.weight}kg × ${pr.reps}次</span>
-          <span style="color:var(--text2);font-size:11px">${pr.date}</span>
-        </div>
-      `).join('')}
-    </div>`;
+    listHTML+=`<div class="card" style="margin-top:12px"><div class="card-header">🏆 个人最佳记录</div>${prEntries.map(([name,pr])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:0.5px solid rgba(0,0,0,0.03)"><span>${name}</span><span class="pr-badge">${pr.weight}kg × ${pr.reps}次</span><span style="color:var(--text2);font-size:11px">${pr.date}</span></div>`).join('')}</div>`;
   }
-
   container.innerHTML = calHTML + listHTML;
 }
 
@@ -1282,89 +1277,55 @@ function renderHistory(){
 function renderProfile(){
   const container = $('#profile-content');
   const p = state.profile;
-
-  const lv = getLevel(p.years);
-  const plan = lv ? PLANS[lv] : null;
-
-  // Weekly stats
+  const lv = getLevel();
+  const gender = getGender();
+  const plan = lv ? PLANS[gender][lv] : null;
   const today = new Date();
-  let weekCount = 0;
-  let weekVolume = 0;
+  let weekCount=0,weekVolume=0;
   for(let i=0;i<7;i++){
-    const d = new Date(today);
-    d.setDate(d.getDate()-i);
-    const ds = d.toISOString().slice(0,10);
-    const entry = state.history[ds];
-    if(entry){
-      weekCount++;
-      entry.exercises.forEach(ex=>{
-        ex.sets.forEach(s=>{weekVolume += (s.weight||0)*(s.reps||0)});
-      });
-    }
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const ds=d.toISOString().slice(0,10);
+    const entry=state.history[ds];
+    if(entry){weekCount++;entry.exercises.forEach(ex=>{ex.sets.forEach(s=>{weekVolume+=(s.weight||0)*(s.reps||0)});});}
   }
+
+  const strengthLevel = getLevelFromStrength();
+  const yearsLevel = (parseFloat(p.years)||0)<=0 ? null : (parseFloat(p.years)<1?'beginner':(parseFloat(p.years)<=3?'intermediate':'advanced'));
 
   container.innerHTML = `
     <div class="fade-in-up">
-      <!-- Profile Card -->
       <div class="card" style="padding:20px">
         <div style="display:flex;align-items:center;gap:14px">
-          <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:28px">${p.name?'🏋️':'👤'}</div>
-          <div>
-            <div style="font-size:18px;font-weight:700">${p.name||'未设置名称'}</div>
-            <div style="font-size:13px;color:var(--text2)">
-              ${lv?getLevelLabel(lv):'未设置'}${plan?' · '+plan.name:''}
-            </div>
-          </div>
+          <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));display:flex;align-items:center;justify-content:center;font-size:28px">${p.name?'🏋️':'👤'}</div>
+          <div><div style="font-size:18px;font-weight:700">${p.name||'未设置名称'}</div><div style="font-size:13px;color:var(--text2)">${getGender()==='female'?'👩 女生':'👨 男生'} · ${lv?getLevelLabel(lv):'未评级'}${plan?' · '+plan.name:''}</div></div>
         </div>
       </div>
-
-      <!-- Stats -->
-      <div class="card">
-        <div class="card-header">本周统计</div>
-        <div style="display:flex;gap:16px;margin-top:8px">
-          <div style="flex:1;text-align:center;padding:12px;background:rgba(255,255,255,0.03);border-radius:12px">
-            <div style="font-size:24px;font-weight:700">${weekCount}</div>
-            <div style="font-size:11px;color:var(--text2)">训练天数</div>
-          </div>
-          <div style="flex:1;text-align:center;padding:12px;background:rgba(255,255,255,0.03);border-radius:12px">
-            <div style="font-size:24px;font-weight:700">${Math.round(weekVolume/100)/10}t</div>
-            <div style="font-size:11px;color:var(--text2)">总训练量</div>
-          </div>
+      <div class="card"><div class="card-header">本周统计</div><div style="display:flex;gap:16px;margin-top:8px"><div style="flex:1;text-align:center;padding:12px;background:rgba(0,0,0,0.02);border-radius:12px"><div style="font-size:24px;font-weight:700">${weekCount}</div><div style="font-size:11px;color:var(--text2)">训练天数</div></div><div style="flex:1;text-align:center;padding:12px;background:rgba(0,0,0,0.02);border-radius:12px"><div style="font-size:24px;font-weight:700">${Math.round(weekVolume/100)/10}t</div><div style="font-size:11px;color:var(--text2)">总训练量</div></div></div></div>
+      <div class="card"><div class="card-header">身体数据</div>
+        <label class="form-label">性别</label>
+        <div class="gender-toggle" style="margin-bottom:10px">
+          <button class="gender-btn ${gender==='male'?'active-male':''}" id="g-btn-male" onclick="setGender('male')">👨 男生</button>
+          <button class="gender-btn ${gender==='female'?'active-female':''}" id="g-btn-female" onclick="setGender('female')">👩 女生</button>
         </div>
+        <label class="form-label">昵称</label><input class="form-input" id="pf-name" value="${p.name||''}" placeholder="你的名字">
+        <div class="form-row"><div><label class="form-label">身高 (cm)</label><input class="form-input" id="pf-height" type="number" value="${p.height||''}" placeholder="175"></div><div><label class="form-label">体重 (kg)</label><input class="form-input" id="pf-weight" type="number" value="${p.weight||''}" placeholder="70"></div></div>
+        <label class="form-label">训练年限</label><select class="form-input" id="pf-years"><option value="">请选择</option><option value="0.5" ${p.years==='0.5'?'selected':''}>不到1年</option><option value="1" ${p.years==='1'?'selected':''}>1年</option><option value="2" ${p.years==='2'?'selected':''}>2年</option><option value="3" ${p.years==='3'?'selected':''}>3年</option><option value="4" ${p.years==='4'?'selected':''}>4年</option><option value="5" ${p.years==='5'?'selected':''}>5年以上</option></select>
       </div>
-
-      <!-- Edit Form -->
-      <div class="card">
-        <div class="card-header">身体数据</div>
-        <label class="form-label">昵称</label>
-        <input class="form-input" id="pf-name" value="${p.name||''}" placeholder="你的名字">
-        <div class="form-row">
-          <div><label class="form-label">身高 (cm)</label><input class="form-input" id="pf-height" type="number" value="${p.height||''}" placeholder="175"></div>
-          <div><label class="form-label">体重 (kg)</label><input class="form-input" id="pf-weight" type="number" value="${p.weight||''}" placeholder="70"></div>
-        </div>
-        <label class="form-label">训练年限</label>
-        <select class="form-input" id="pf-years">
-          <option value="">请选择</option>
-          <option value="0.5" ${p.years==='0.5'?'selected':''}>不到1年</option>
-          <option value="1" ${p.years==='1'?'selected':''}>1年</option>
-          <option value="2" ${p.years==='2'?'selected':''}>2年</option>
-          <option value="3" ${p.years==='3'?'selected':''}>3年</option>
-          <option value="4" ${p.years==='4'?'selected':''}>4年</option>
-          <option value="5" ${p.years==='5'?'selected':''}>5年以上</option>
-        </select>
-        ${lv?`
-        <div style="padding:10px;border-radius:10px;background:rgba(10,132,255,0.1);margin-top:8px;font-size:13px">
-          你的等级: <strong>${getLevelLabel(lv)}</strong> · 推荐: <strong>${plan.name}</strong>（${plan.frequency}）
-        </div>`:''}
-        <button class="btn btn-primary" style="margin-top:12px" onclick="saveProfile()">保存资料</button>
+      <div class="card"><div class="card-header">力量数据（选填，用于精准定级）</div><div class="card-sub" style="margin-bottom:8px">填写你做组的重量（非1RM），系统自动换算</div>
+        <div class="form-row"><div><label class="form-label">卧推做组 (kg)</label><input class="form-input" id="pf-bench" type="number" value="${p.bench||''}" placeholder="如 60"></div><div><label class="form-label">深蹲做组 (kg)</label><input class="form-input" id="pf-squat" type="number" value="${p.squat||''}" placeholder="如 80"></div></div>
+        <div class="form-row"><div><label class="form-label">硬拉做组 (kg)</label><input class="form-input" id="pf-deadlift" type="number" value="${p.deadlift||''}" placeholder="如 100"></div><div><label class="form-label">引体向上 (最大次数)</label><input class="form-input" id="pf-pullup" type="number" value="${p.pullup||''}" placeholder="如 5"></div></div>
+        ${strengthLevel?`<div style="padding:10px;border-radius:10px;background:rgba(255,107,138,0.08);margin-top:4px;font-size:13px">力量评估: <strong>${getLevelLabel(strengthLevel)}</strong>${yearsLevel&&yearsLevel!==strengthLevel?` · 年限评估: ${getLevelLabel(yearsLevel)}（综合采用力量评估）`:''}</div>`:''}
       </div>
-
-      <!-- Danger Zone -->
-      <div class="card" style="margin-top:8px">
-        <button class="btn btn-danger" style="width:100%" onclick="resetData()">重置所有数据</button>
-        <div style="font-size:11px;color:var(--text2);margin-top:6px;text-align:center">清除所有训练记录和个人资料</div>
-      </div>
+      ${lv?`<div style="padding:10px;border-radius:10px;background:rgba(52,199,89,0.08);margin-bottom:10px;font-size:13px">当前等级: <strong>${getLevelLabel(lv)}</strong> · 推荐计划: <strong>${plan.name}</strong>（${plan.frequency}）</div>`:''}
+      <button class="btn btn-primary" onclick="saveProfile()">保存资料</button>
+      <div class="card" style="margin-top:8px"><button class="btn btn-sm" style="width:100%;color:var(--pink);background:rgba(255,107,138,0.06)" onclick="resetData()">重置所有数据</button></div>
     </div>`;
+}
+
+function setGender(g){
+  state.profile.gender = g;
+  saveState();
+  renderProfile();
 }
 
 function saveProfile(){
@@ -1372,6 +1333,10 @@ function saveProfile(){
   state.profile.height = $('#pf-height').value;
   state.profile.weight = $('#pf-weight').value;
   state.profile.years = $('#pf-years').value;
+  state.profile.bench = $('#pf-bench').value;
+  state.profile.squat = $('#pf-squat').value;
+  state.profile.deadlift = $('#pf-deadlift').value;
+  state.profile.pullup = $('#pf-pullup').value;
   saveState();
   showToast('资料已保存 ✅');
   renderProfile();
@@ -1379,11 +1344,8 @@ function saveProfile(){
 
 function resetData(){
   if(confirm('确定要清除所有数据吗？此操作无法撤销。')){
-    state = defaultState();
-    saveState();
-    todayWorkout = null;
-    showToast('数据已清除');
-    renderAll();
+    state = defaultState(); saveState(); todayWorkout = null;
+    showToast('数据已清除'); renderAll();
   }
 }
 
@@ -1403,27 +1365,14 @@ function showToast(msg){
 // ===========================
 function switchTab(idx){
   if(idx===currentTab) return;
-
   const oldPage = $(`#page-${currentTab}`);
   const newPage = $(`#page-${idx}`);
-
-  // Exit old
-  if(oldPage){
-    oldPage.classList.remove('active');
-    oldPage.classList.add('exit');
-    setTimeout(()=>oldPage.classList.remove('exit'), 500);
-  }
-
-  // Enter new
+  if(oldPage){oldPage.classList.remove('active');oldPage.classList.add('exit');setTimeout(()=>oldPage.classList.remove('exit'),500);}
   newPage.classList.add('active');
-
-  // Update tab bar
   $$('.tab-btn').forEach((b,i)=>b.classList.toggle('active', i===idx));
-
   currentTab = idx;
   renderCurrentPage();
 }
-
 function renderCurrentPage(){
   switch(currentTab){
     case 0: renderWorkout(); break;
@@ -1434,38 +1383,17 @@ function renderCurrentPage(){
   }
 }
 function renderAll(){
-  renderWorkout();
-  renderMusclePills();
-  renderExerciseList();
-  renderLog();
-  renderHistory();
-  renderProfile();
+  renderWorkout(); renderMusclePills(); renderExerciseList();
+  renderLog(); renderHistory(); renderProfile();
 }
 
-// ===========================
-// INIT
-// ===========================
-$$('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>switchTab(parseInt(btn.dataset.tab)));
-});
-
-// Swipe detection for tab switching
-let touchStartX = 0;
+$$('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>switchTab(parseInt(btn.dataset.tab)));});
+let touchStartX=0;
 document.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX});
-document.addEventListener('touchend',e=>{
-  const diff = e.changedTouches[0].clientX - touchStartX;
-  if(Math.abs(diff)>60){
-    if(diff<0 && currentTab<4) switchTab(currentTab+1);
-    else if(diff>0 && currentTab>0) switchTab(currentTab-1);
-  }
-});
+document.addEventListener('touchend',e=>{const diff=e.changedTouches[0].clientX-touchStartX;if(Math.abs(diff)>60){if(diff<0&&currentTab<4)switchTab(currentTab+1);else if(diff>0&&currentTab>0)switchTab(currentTab-1);}});
 
 renderAll();
-
-// Register Service Worker for PWA
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 </body>
 </html>
